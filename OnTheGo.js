@@ -1,214 +1,200 @@
-// OnTheGo.js
+// --- State/City Data (alphabetical) ---
+const states = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
+  "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
+  "Uttarakhand", "West Bengal"
+];
+
+const stateCities = {
+  "Andhra Pradesh": ["Guntur", "Kurnool", "Nellore", "Vijayawada", "Visakhapatnam"].sort(),
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat"].sort(),
+  "Assam": ["Dibrugarh", "Guwahati", "Silchar"].sort(),
+  "Bihar": ["Bhagalpur", "Gaya", "Patna"].sort(),
+  "Chhattisgarh": ["Bhilai", "Bilaspur", "Raipur"].sort(),
+  "Delhi": ["Dwarka", "New Delhi", "Rohini"].sort(),
+  "Goa": ["Margao", "Panaji", "Vasco da Gama"].sort(),
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara"].sort(),
+  "Haryana": ["Faridabad", "Gurugram", "Panipat"].sort(),
+  "Himachal Pradesh": ["Mandi", "Shimla", "Solan"].sort(),
+  "Jharkhand": ["Dhanbad", "Jamshedpur", "Ranchi"].sort(),
+  "Karnataka": ["Bengaluru", "Hubballi–Dharwad", "Mysuru"].sort(),
+  "Kerala": ["Kochi", "Kozhikode", "Thiruvananthapuram"].sort(),
+  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur"].sort(),
+  "Maharashtra": ["Mumbai", "Nagpur", "Pune"].sort(),
+  "Manipur": ["Bishnupur", "Imphal", "Thoubal"].sort(),
+  "Meghalaya": ["Nongstoin", "Shillong", "Tura"].sort(),
+  "Mizoram": ["Aizawl", "Lunglei", "Saiha"].sort(),
+  "Nagaland": ["Dimapur", "Kohima", "Mokokchung"].sort(),
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela"].sort(),
+  "Punjab": ["Amritsar", "Jalandhar", "Ludhiana"].sort(),
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota"].sort(),
+  "Sikkim": ["Gangtok", "Geyzing", "Namchi"].sort(),
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"].sort(),
+  "Telangana": ["Hyderabad", "Nizamabad", "Warangal"].sort(),
+  "Tripura": ["Agartala", "Dharmanagar", "Udaipur"].sort(),
+  "Uttar Pradesh": ["Ghaziabad", "Kanpur", "Lucknow"].sort(),
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee"].sort(),
+  "West Bengal": ["Durgapur", "Howrah", "Kolkata"].sort()
+};
 
 // --- Date Input Formatting and Validation ---
-function setupDateAutoFormat(input) {
-  input.addEventListener('input', function(e) {
-    let value = input.value.replace(/[^0-9]/g, '');
-    let day = value.substr(0, 2);
-    let month = value.substr(2, 2);
-    let year = value.substr(4, 4);
-
-    // Restrict day and month as you type
-    if (day.length === 2) {
-      if (parseInt(day, 10) > 31) day = "31";
-      if (parseInt(day, 10) < 1 && day !== "") day = "01";
-    }
-    if (month.length === 2) {
-      if (parseInt(month, 10) > 12) month = "12";
-      if (parseInt(month, 10) < 1 && month !== "") month = "01";
-    }
-
-    let formatted = "";
-    if (day) formatted += day;
-    if (month) formatted += "-" + month;
-    if (year) formatted += "-" + year;
-
-    input.value = formatted;
-
-    // Validate full date
-    let isValid = true;
+function getTomorrowDDMMYYYY() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const dd = String(tomorrow.getDate()).padStart(2, '0');
+  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const yyyy = tomorrow.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+function getMaxDDMMYYYY() {
+  const maxYear = new Date().getFullYear() + 2;
+  return `31-12-${maxYear}`;
+}
+function clampDateToRange(dateStr) {
+  const [dd, mm, yyyy] = dateStr.split('-').map(Number);
+  if (!dd || !mm || !yyyy) return getTomorrowDDMMYYYY();
+  let inputDate = new Date(yyyy, mm - 1, dd);
+  inputDate.setHours(0,0,0,0);
+  const tomorrow = new Date();
+  tomorrow.setHours(0,0,0,0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const maxDate = new Date((new Date().getFullYear() + 2), 11, 31);
+  if (inputDate < tomorrow) return getTomorrowDDMMYYYY();
+  if (inputDate > maxDate) return getMaxDDMMYYYY();
+  let day = Math.max(1, Math.min(dd, 31));
+  let month = Math.max(1, Math.min(mm, 12));
+  let year = Math.max(tomorrow.getFullYear(), Math.min(yyyy, maxDate.getFullYear()));
+  const daysInMonth = new Date(year, month, 0).getDate();
+  if (day > daysInMonth) day = daysInMonth;
+  return `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
+}
+function parseDDMMYYYY(str) {
+  const [dd, mm, yyyy] = str.split('-').map(Number);
+  if (!dd || !mm || !yyyy) return null;
+  return new Date(yyyy, mm - 1, dd);
+}
+function formatDDMMYYYY(date) {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+function setupDateAutoFormat(input, otherInput) {
+  input.addEventListener('input', function() {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 8) value = value.slice(0, 8);
+    let formatted = '';
     if (value.length >= 2) {
-      const d = parseInt(day, 10);
-      if (isNaN(d) || d < 1 || d > 31) isValid = false;
+      formatted += value.slice(0, 2) + '-';
+    } else {
+      formatted += value;
     }
     if (value.length >= 4) {
-      const m = parseInt(month, 10);
-      if (isNaN(m) || m < 1 || m > 12) isValid = false;
+      formatted += value.slice(2, 4) + '-';
+      formatted += value.slice(4);
+    } else if (value.length > 2) {
+      formatted += value.slice(2);
     }
+    input.value = formatted;
     if (value.length === 8) {
-      const y = parseInt(year, 10);
-      const currentYear = new Date().getFullYear();
-      if (isNaN(y) || y < 1900 || y > currentYear + 2) isValid = false;
+      const corrected = clampDateToRange(formatted);
+      input.value = corrected;
+      input.blur();
+      if (otherInput) clampCheckoutToCheckin();
     }
-    input.classList.toggle('invalid', !isValid);
   });
-
-  // Prevent non-numeric input
   input.addEventListener('keydown', function(e) {
-    if (e.ctrlKey || e.metaKey || e.key === "Backspace" || e.key === "Tab" || e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "Delete") {
+    if (
+      e.ctrlKey || e.metaKey ||
+      ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)
+    ) {
       return;
     }
-    if (e.key.length === 1 && !/\d/.test(e.key)) {
+    if (!/\d/.test(e.key)) {
       e.preventDefault();
     }
   });
+  input.addEventListener('blur', function() {
+    if (input.value.length === 10) {
+      input.value = clampDateToRange(input.value);
+      if (otherInput) clampCheckoutToCheckin();
+    }
+  });
 }
+const checkinInput = document.getElementById('checkin-date');
+const checkoutInput = document.getElementById('checkout-date');
+setupDateAutoFormat(checkinInput, checkoutInput);
+setupDateAutoFormat(checkoutInput, null);
 
-document.addEventListener('DOMContentLoaded', function() {
-  // --- Date Picker (Flatpickr) Integration ---
-  const checkinInput = document.getElementById('checkin-date');
-  const checkoutInput = document.getElementById('checkout-date');
-  const checkinCalendarIcon = checkinInput.parentElement.querySelector('.icon-calendar');
-  const checkoutCalendarIcon = checkoutInput.parentElement.querySelector('.icon-calendar');
-
-  // Attach auto-formatting
-  setupDateAutoFormat(checkinInput);
-  setupDateAutoFormat(checkoutInput);
-
-  // Flatpickr instances
-  const checkinPicker = flatpickr(checkinInput, {
-    dateFormat: "d-m-Y",
-    minDate: "today",
-    allowInput: true,
-    clickOpens: false, // We'll open it manually
-    onChange: function(selectedDates, dateStr) {
-      checkinInput.value = dateStr;
-      checkinInput.classList.remove('invalid');
+function clampCheckoutToCheckin() {
+  const checkinVal = checkinInput.value;
+  const checkoutVal = checkoutInput.value;
+  if (checkinVal.length === 10) {
+    const checkinDate = parseDDMMYYYY(checkinVal);
+    let minCheckout = new Date(checkinDate.getTime());
+    minCheckout.setDate(minCheckout.getDate() + 1);
+    if (checkoutVal.length === 10) {
+      const checkoutDate = parseDDMMYYYY(checkoutVal);
+      if (checkoutDate < minCheckout) {
+        checkoutInput.value = formatDDMMYYYY(minCheckout);
+      }
+    } else {
+      checkoutInput.value = formatDDMMYYYY(minCheckout);
     }
-  });
-  const checkoutPicker = flatpickr(checkoutInput, {
-    dateFormat: "d-m-Y",
-    minDate: "today",
-    allowInput: true,
-    clickOpens: false,
-    onChange: function(selectedDates, dateStr) {
-      checkoutInput.value = dateStr;
-      checkoutInput.classList.remove('invalid');
-    }
-  });
+  }
+}
+checkoutInput.addEventListener('blur', clampCheckoutToCheckin);
+checkinInput.addEventListener('blur', clampCheckoutToCheckin);
 
-  // Calendar icon opens the picker
-  checkinCalendarIcon.addEventListener('click', () => {
-    checkinPicker.open();
-  });
-  checkoutCalendarIcon.addEventListener('click', () => {
-    checkoutPicker.open();
+// --- Native Select Dropdown Logic and Form Validation ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Populate State Dropdown
+  const stateSelect = document.getElementById('state-select');
+  const citySelect = document.getElementById('city-select');
+  states.forEach(state => {
+    const option = new Option(state, state);
+    stateSelect.add(option);
   });
 
-  // Prevent input from losing focus when clicking the icon
-  checkinCalendarIcon.addEventListener('mousedown', e => e.preventDefault());
-  checkoutCalendarIcon.addEventListener('mousedown', e => e.preventDefault());
-
-  // --- State/City Dropdown Logic ---
-  let states = [];
-  let stateCities = {};
-
-  fetch('indianStatesCities.json')
-    .then(response => response.json())
-    .then(data => {
-      states = data.states;
-      stateCities = data.stateCities;
-      initializeDropdowns(states, stateCities);
-    })
-    .catch(err => {
-      alert("Failed to load states and cities data.");
-      console.error(err);
-    });
-
-  function initializeDropdowns(states, stateCities) {
-    const stateInput = document.getElementById('state-input');
-    const stateDropdown = document.querySelector('.state-dropdown');
-    const cityInput = document.getElementById('city-input');
-    const cityDropdown = document.querySelector('.city-dropdown');
-
-    function filterList(list, query) {
-      query = query.trim().toLowerCase();
-      return list.filter(item => item.toLowerCase().includes(query));
-    }
-
-    function renderDropdown(dropdown, items, maxVisible) {
-      dropdown.innerHTML = '';
-      items.forEach((item) => {
-        const div = document.createElement('div');
-        div.className = 'dropdown-option';
-        div.textContent = item;
-        dropdown.appendChild(div);
+  // City Dropdown Logic
+  stateSelect.addEventListener('change', () => {
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    citySelect.disabled = !stateSelect.value;
+    if (stateSelect.value && stateCities[stateSelect.value]) {
+      stateCities[stateSelect.value].forEach(city => {
+        const option = new Option(city, city);
+        citySelect.add(option);
       });
-      dropdown.style.display = items.length ? 'block' : 'none';
-      dropdown.style.maxHeight = (maxVisible * 44) + "px";
     }
+    validateForm();
+  });
 
-    // State dropdown events
-    stateInput.addEventListener('focus', () => {
-      const filtered = filterList(states, stateInput.value);
-      renderDropdown(stateDropdown, filtered, 8);
-      stateDropdown.classList.add('active');
-    });
+  citySelect.addEventListener('change', validateForm);
 
-    stateInput.addEventListener('input', () => {
-      const filtered = filterList(states, stateInput.value);
-      renderDropdown(stateDropdown, filtered, 8);
-      stateDropdown.classList.add('active');
-    });
+  // Date input validation
+  checkinInput.addEventListener('input', validateForm);
+  checkoutInput.addEventListener('input', validateForm);
 
-    stateInput.addEventListener('blur', () => {
-      setTimeout(() => stateDropdown.classList.remove('active'), 150);
-    });
-
-    stateDropdown.addEventListener('mousedown', (e) => {
-      if (e.target.classList.contains('dropdown-option')) {
-        stateInput.value = e.target.textContent;
-        stateDropdown.classList.remove('active');
-        cityInput.disabled = false;
-        cityInput.value = '';
-        cityDropdown.innerHTML = '';
-      }
-    });
-
-    // City dropdown events
-    cityInput.addEventListener('focus', () => {
-      if (cityInput.disabled) return;
-      const state = stateInput.value;
-      const cities = stateCities[state] || [];
-      const filtered = filterList(cities, cityInput.value);
-      renderDropdown(cityDropdown, filtered, 20);
-      cityDropdown.classList.add('active');
-    });
-
-    cityInput.addEventListener('input', () => {
-      if (cityInput.disabled) return;
-      const state = stateInput.value;
-      const cities = stateCities[state] || [];
-      const filtered = filterList(cities, cityInput.value);
-      renderDropdown(cityDropdown, filtered, 20);
-      cityDropdown.classList.add('active');
-    });
-
-    cityInput.addEventListener('blur', () => {
-      setTimeout(() => cityDropdown.classList.remove('active'), 150);
-    });
-
-    cityDropdown.addEventListener('mousedown', (e) => {
-      if (e.target.classList.contains('dropdown-option')) {
-        cityInput.value = e.target.textContent;
-        cityDropdown.classList.remove('active');
-      }
-    });
-
-    // --- Dropdowns close if you click anywhere except their respective input/dropdown ---
-    document.addEventListener('mousedown', (e) => {
-      if (!stateInput.contains(e.target) && !stateDropdown.contains(e.target)) {
-        stateDropdown.classList.remove('active');
-      }
-      if (!cityInput.contains(e.target) && !cityDropdown.contains(e.target)) {
-        cityDropdown.classList.remove('active');
-      }
-    });
+  function validateForm() {
+    const allFilled =
+      checkinInput.value.length === 10 &&
+      checkoutInput.value.length === 10 &&
+      stateSelect.value &&
+      citySelect.value;
+    document.getElementById('apply-btn').disabled = !allFilled;
   }
 
-  // --- Apply button animation ---
+  // Submit Handler
   document.getElementById('apply-btn').addEventListener('click', function() {
-    this.classList.add('clicked');
-    setTimeout(() => this.classList.remove('clicked'), 200);
+    const params = new URLSearchParams({
+      checkin: checkinInput.value,
+      checkout: checkoutInput.value,
+      state: stateSelect.value,
+      city: citySelect.value
+    });
+    window.location.href = `hotels.html?${params.toString()}`;
   });
 });

@@ -51,14 +51,19 @@ body {
 }
 
 .input-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   align-items: flex-end;
+  justify-content: flex-start;
 }
 
 .input-group {
   position: relative;
+  min-width: 200px;
+  max-width: 270px;
+  flex: 1 1 200px;
+  margin-bottom: 0;
 }
 
 label {
@@ -70,7 +75,7 @@ label {
   margin-bottom: 8px;
 }
 
-.input-wrapper, .select-wrapper {
+.input-wrapper {
   position: relative;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -78,12 +83,12 @@ label {
   background: #fff;
 }
 
-.input-wrapper:hover, .select-wrapper:hover,
-.input-wrapper:focus-within, .select-wrapper:focus-within {
+.input-wrapper:hover,
+.input-wrapper:focus-within {
   border-color: var(--primary-blue);
 }
 
-.date-input, .custom-select input {
+.date-input {
   width: 100%;
   padding: 14px 16px;
   font-size: 15px;
@@ -93,7 +98,22 @@ label {
   color: var(--text-dark);
 }
 
-.icon-calendar, .icon-arrow {
+.custom-select {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1.5px solid #d3dbe3;
+  border-radius: 6px;
+  background: #f7fafd;
+  appearance: none;
+  outline: none;
+}
+
+.custom-select:focus {
+  border-color: #0093ff;
+}
+
+.icon-calendar {
   position: absolute;
   right: 16px;
   top: 50%;
@@ -104,11 +124,6 @@ label {
 
 .icon-calendar::before {
   content: "📅";
-}
-
-.icon-arrow::after {
-  content: "▼";
-  font-size: 12px;
 }
 
 .primary-cta {
@@ -122,52 +137,14 @@ label {
   cursor: pointer;
   transition: background 0.2s;
   height: 50px;
+  flex: 0 0 auto;
+  margin-left: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .primary-cta:hover {
   background: var(--secondary-blue);
-}
-
-.dropdown {
-  position: absolute;
-  width: 100%;
-  max-height: 352px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-top: 8px;
-  display: none;
-  z-index: 1000;
-}
-
-.state-dropdown {
-  max-height: calc(8 * 44px);
-}
-.city-dropdown {
-  max-height: calc(20 * 44px);
-}
-
-.dropdown.active {
-  display: block;
-}
-
-.dropdown-option {
-  padding: 12px 16px;
-  cursor: pointer;
-  font-size: 15px;
-  color: var(--text-dark);
-  transition: background 0.1s;
-}
-
-.dropdown-option:hover {
-  background: #f5f7fa;
-}
-
-input[disabled] {
-  background: #f0f0f0;
-  color: #aaa;
 }
 
 .date-input.invalid {
@@ -175,12 +152,54 @@ input[disabled] {
   background: #fff0f0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .booking-card {
     padding: 24px;
   }
-  
   .input-row {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
   }
+  .primary-cta {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+/* Hotel Listing Page Styles */
+.hotel-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hotel-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.hotel-card h3 {
+  color: var(--primary-blue);
+  margin: 0 0 10px 0;
+}
+
+.hotel-price {
+  font-size: 24px;
+  color: var(--text-dark);
+  margin: 10px 0;
+}
+
+.hotel-rating {
+  color: #ffc107;
+  font-weight: 500;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
 }

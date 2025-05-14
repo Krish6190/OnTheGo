@@ -11,51 +11,47 @@
       <div class="logo">OnTheGo<span class="in-logo">(IN)</span></div>
     </div>
   </header>
-
   <main class="booking-container">
     <div class="booking-card">
       <div class="input-row">
-        <div class="input-group date-group">
+        <!-- Date Inputs -->
+        <div class="input-group">
           <label for="checkin-date">CHECK-IN</label>
           <div class="input-wrapper">
             <input type="text" id="checkin-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
             <i class="icon-calendar"></i>
           </div>
         </div>
-        <div class="input-group date-group">
+        <div class="input-group">
           <label for="checkout-date">CHECK-OUT</label>
           <div class="input-wrapper">
             <input type="text" id="checkout-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
             <i class="icon-calendar"></i>
           </div>
         </div>
+
+        <!-- State/City Dropdowns -->
         <div class="input-group">
-          <label for="state-input">STATE</label>
-          <div class="custom-select">
-            <div class="select-wrapper">
-              <input type="text" id="state-input" autocomplete="off" placeholder="Select State">
-              <i class="icon-arrow"></i>
-            </div>
-            <div class="dropdown state-dropdown"></div>
-          </div>
+          <label for="state-select">STATE</label>
+          <select id="state-select" class="custom-select">
+            <option value="">Select State</option>
+            <!-- States will be populated by JS -->
+          </select>
         </div>
         <div class="input-group">
-          <label for="city-input">CITY</label>
-          <div class="custom-select">
-            <div class="select-wrapper">
-              <input type="text" id="city-input" autocomplete="off" placeholder="Select City" disabled>
-              <i class="icon-arrow"></i>
-            </div>
-            <div class="dropdown city-dropdown"></div>
-          </div>
+          <label for="city-select">CITY</label>
+          <select id="city-select" class="custom-select" disabled>
+            <option value="">Select City</option>
+          </select>
         </div>
-        <button id="apply-btn" class="primary-cta">
-          <span class="cta-text">SEARCH</span>
+
+        <!-- Submit Button -->
+        <button id="apply-btn" class="primary-cta" disabled>
+          <span class="cta-text">SEARCH HOTELS</span>
         </button>
       </div>
     </div>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="OnTheGo.js"></script>
 </body>
 </html>
