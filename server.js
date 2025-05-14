@@ -42,7 +42,7 @@ function convertDate(ddmmyyyy) {
 }
 
 // "Catch-all" handler: for any request that doesn't match /api/hotels, send back index.html
-app.get('*', (req, res) => {
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
