@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 40px auto;
   background: #fff;
   border-radius: 10px;
@@ -31,7 +31,7 @@ h1 {
 .input-group {
   display: flex;
   flex-direction: column;
-  min-width: 180px;
+  min-width: 150px;
   position: relative;
 }
 

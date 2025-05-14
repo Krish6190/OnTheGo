@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>OnTheGo(IN) - Plan Your Indian Trip</title>
-  <link rel="stylesheet" href="OnTheGo.css">
+  <link rel="stylesheet" href="onthego.css">
 </head>
 <body>
   <div class="container">
     <h1>OnTheGo(IN)</h1>
     <div class="input-row">
       <div class="input-group">
-        <label for="visit-date">Date of Visit</label>
-        <input type="date" id="visit-date" min="2025-05-14" />
+        <label for="from-date">From</label>
+        <input type="date" id="from-date" min="2025-05-14" />
+      </div>
+      <div class="input-group">
+        <label for="to-date">To</label>
+        <input type="date" id="to-date" min="2025-05-14" />
       </div>
       <div class="input-group">
         <label for="state-select">State</label>
@@ -30,6 +34,6 @@
       <button id="apply-btn">Apply</button>
     </div>
   </div>
-  <script src="OnTheGo.js"></script>
+  <script src="onthego.js"></script>
 </body>
 </html>
