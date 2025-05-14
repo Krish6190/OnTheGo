@@ -3,45 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <title>OnTheGo(IN) - Plan Your Indian Trip</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="OnTheGo.css">
 </head>
 <body>
   <header class="main-header">
-    <div class="logo">
-      <span>OnTheGo</span><span class="in-logo">(IN)</span>
+    <div class="logo-container">
+      <div class="logo">OnTheGo<span class="in-logo">(IN)</span></div>
     </div>
   </header>
-  <main>
-    <div class="booking-container">
-      <form class="booking-form" autocomplete="off">
-        <div class="input-row">
-          <div class="input-group">
-            <label for="checkin-date">Check IN</label>
-            <input type="date" id="checkin-date" min="2025-05-14" />
+
+  <main class="booking-container">
+    <div class="booking-card">
+      <div class="input-row">
+        <div class="input-group date-group">
+          <label for="checkin-date">CHECK-IN</label>
+          <div class="input-wrapper">
+            <input type="text" id="checkin-date" class="date-input" placeholder="Select Date">
+            <i class="icon-calendar"></i>
           </div>
-          <div class="input-group">
-            <label for="checkout-date">Check OUT</label>
-            <input type="date" id="checkout-date" min="2025-05-14" />
-          </div>
-          <div class="input-group">
-            <label for="state-select">State</label>
-            <div class="custom-select" id="state-select-container">
-              <input type="text" id="state-input" autocomplete="off" placeholder="Select state" />
-              <div class="dropdown state-dropdown" id="state-dropdown"></div>
-            </div>
-          </div>
-          <div class="input-group">
-            <label for="city-select">City</label>
-            <div class="custom-select" id="city-select-container">
-              <input type="text" id="city-input" autocomplete="off" placeholder="Select city" disabled />
-              <div class="dropdown city-dropdown" id="city-dropdown"></div>
-            </div>
-          </div>
-          <button id="apply-btn" type="button">Apply</button>
         </div>
-      </form>
+
+        <div class="input-group date-group">
+          <label for="checkout-date">CHECK-OUT</label>
+          <div class="input-wrapper">
+            <input type="text" id="checkout-date" class="date-input" placeholder="Select Date">
+            <i class="icon-calendar"></i>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="state-input">STATE</label>
+          <div class="custom-select">
+            <div class="select-wrapper">
+              <input type="text" id="state-input" autocomplete="off" placeholder="Select State">
+              <i class="icon-arrow"></i>
+            </div>
+            <div class="dropdown state-dropdown"></div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="city-input">CITY</label>
+          <div class="custom-select">
+            <div class="select-wrapper">
+              <input type="text" id="city-input" autocomplete="off" placeholder="Select City" disabled>
+              <i class="icon-arrow"></i>
+            </div>
+            <div class="dropdown city-dropdown"></div>
+          </div>
+        </div>
+
+        <button id="apply-btn" class="primary-cta">
+          <span class="cta-text">SEARCH</span>
+        </button>
+      </div>
     </div>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="OnTheGo.js"></script>
 </body>
 </html>
