@@ -1,4 +1,3 @@
-/* OnTheGo.css */
 :root {
   --primary-blue: #1AB64F;
   --secondary-blue: #159a47;
@@ -76,9 +75,11 @@ label {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   transition: border-color 0.2s;
+  background: #fff;
 }
 
-.input-wrapper:hover, .select-wrapper:hover {
+.input-wrapper:hover, .select-wrapper:hover,
+.input-wrapper:focus-within, .select-wrapper:focus-within {
   border-color: var(--primary-blue);
 }
 
@@ -98,6 +99,7 @@ label {
   top: 50%;
   transform: translateY(-50%);
   color: #666;
+  pointer-events: none;
 }
 
 .icon-calendar::before {
@@ -129,7 +131,7 @@ label {
 .dropdown {
   position: absolute;
   width: 100%;
-  max-height: 320px;
+  max-height: 352px;
   overflow-y: auto;
   background: #fff;
   border: 1px solid var(--border-color);
@@ -138,6 +140,13 @@ label {
   margin-top: 8px;
   display: none;
   z-index: 1000;
+}
+
+.state-dropdown {
+  max-height: calc(8 * 44px);
+}
+.city-dropdown {
+  max-height: calc(20 * 44px);
 }
 
 .dropdown.active {
@@ -154,6 +163,16 @@ label {
 
 .dropdown-option:hover {
   background: #f5f7fa;
+}
+
+input[disabled] {
+  background: #f0f0f0;
+  color: #aaa;
+}
+
+.date-input.invalid {
+  border: 2px solid #e74c3c !important;
+  background: #fff0f0;
 }
 
 @media (max-width: 768px) {
