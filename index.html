@@ -6,34 +6,42 @@
   <link rel="stylesheet" href="OnTheGo.css">
 </head>
 <body>
-  <div class="container">
-    <h1>OnTheGo(IN)</h1>
-    <div class="input-row">
-      <div class="input-group">
-        <label for="from-date">From</label>
-        <input type="date" id="from-date" min="2025-05-14" />
-      </div>
-      <div class="input-group">
-        <label for="to-date">To</label>
-        <input type="date" id="to-date" min="2025-05-14" />
-      </div>
-      <div class="input-group">
-        <label for="state-select">State</label>
-        <div class="custom-select" id="state-select-container">
-          <input type="text" id="state-input" autocomplete="off" placeholder="Type or select state..." />
-          <div class="dropdown" id="state-dropdown"></div>
-        </div>
-      </div>
-      <div class="input-group">
-        <label for="city-select">City</label>
-        <div class="custom-select" id="city-select-container">
-          <input type="text" id="city-input" autocomplete="off" placeholder="Type or select city..." disabled />
-          <div class="dropdown" id="city-dropdown"></div>
-        </div>
-      </div>
-      <button id="apply-btn">Apply</button>
+  <header class="main-header">
+    <div class="logo">
+      <span>OnTheGo</span><span class="in-logo">(IN)</span>
     </div>
-  </div>
+  </header>
+  <main>
+    <div class="booking-container">
+      <form class="booking-form" autocomplete="off">
+        <div class="input-row">
+          <div class="input-group">
+            <label for="checkin-date">Check IN</label>
+            <input type="date" id="checkin-date" min="2025-05-14" />
+          </div>
+          <div class="input-group">
+            <label for="checkout-date">Check OUT</label>
+            <input type="date" id="checkout-date" min="2025-05-14" />
+          </div>
+          <div class="input-group">
+            <label for="state-select">State</label>
+            <div class="custom-select" id="state-select-container">
+              <input type="text" id="state-input" autocomplete="off" placeholder="Select state" />
+              <div class="dropdown state-dropdown" id="state-dropdown"></div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="city-select">City</label>
+            <div class="custom-select" id="city-select-container">
+              <input type="text" id="city-input" autocomplete="off" placeholder="Select city" disabled />
+              <div class="dropdown city-dropdown" id="city-dropdown"></div>
+            </div>
+          </div>
+          <button id="apply-btn" type="button">Apply</button>
+        </div>
+      </form>
+    </div>
+  </main>
   <script src="OnTheGo.js"></script>
 </body>
 </html>
