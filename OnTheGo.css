@@ -87,9 +87,18 @@ button#apply-btn:active {
   border: 1px solid #bdbdbd;
   border-radius: 0 0 6px 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  max-height: 220px;
-  overflow-y: auto;
   display: none;
+  overflow-y: auto;
+  /* Default max-height, will be overridden by JS */
+  max-height: 320px;
+}
+
+.dropdown.state-dropdown {
+  max-height: calc(8 * 42px); /* 8 items, each about 42px high */
+}
+
+.dropdown.city-dropdown {
+  max-height: calc(20 * 42px); /* 20 items, each about 42px high */
 }
 
 .dropdown.active {
@@ -101,6 +110,7 @@ button#apply-btn:active {
   cursor: pointer;
   font-size: 16px;
   transition: background 0.16s;
+  white-space: nowrap;
 }
 
 .dropdown-option:hover,

@@ -26,9 +26,9 @@ function filterList(list, query) {
   return list.filter(item => item.toLowerCase().includes(query));
 }
 
-function createDropdown(dropdownEl, options, maxVisible, onSelect, selectedValue = "") {
+function createDropdown(dropdownEl, options, onSelect, selectedValue = "") {
   dropdownEl.innerHTML = "";
-  options.slice(0, maxVisible).forEach(option => {
+  options.forEach(option => {
     const div = document.createElement("div");
     div.className = "dropdown-option" + (option === selectedValue ? " selected" : "");
     div.textContent = option;
@@ -43,6 +43,7 @@ function createDropdown(dropdownEl, options, maxVisible, onSelect, selectedValue
 // --- State Dropdown ---
 const stateInput = document.getElementById('state-input');
 const stateDropdown = document.getElementById('state-dropdown');
+stateDropdown.classList.add('state-dropdown');
 let stateDropdownActive = false;
 
 stateInput.addEventListener('focus', () => {
@@ -64,7 +65,7 @@ stateInput.addEventListener('blur', () => {
 
 function updateStateDropdown() {
   const filtered = filterList(states, stateInput.value);
-  createDropdown(stateDropdown, filtered, 6, (state) => {
+  createDropdown(stateDropdown, filtered, (state) => {
     stateInput.value = state;
     stateDropdown.classList.remove('active');
     stateDropdownActive = false;
@@ -82,6 +83,7 @@ function enableCityInput(state) {
 // --- City Dropdown ---
 const cityInput = document.getElementById('city-input');
 const cityDropdown = document.getElementById('city-dropdown');
+cityDropdown.classList.add('city-dropdown');
 let cityDropdownActive = false;
 
 cityInput.addEventListener('focus', () => {
@@ -105,7 +107,7 @@ cityInput.addEventListener('blur', () => {
 function updateCityDropdown(state, query) {
   const cities = stateCities[state] || [];
   const filtered = filterList(cities, query);
-  createDropdown(cityDropdown, filtered, 20, (city) => {
+  createDropdown(cityDropdown, filtered, (city) => {
     cityInput.value = city;
     cityDropdown.classList.remove('active');
     cityDropdownActive = false;
