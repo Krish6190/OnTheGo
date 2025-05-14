@@ -1,5 +1,27 @@
 {
   "dependencies": {
-    "dotenv": "^16.5.0"
-  }
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2"
+  },
+  "name": "onthego",
+  "version": "1.0.0",
+  "main": "OnTheGo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Krish6190/OnTheGo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Krish6190/OnTheGo/issues"
+  },
+  "homepage": "https://github.com/Krish6190/OnTheGo#readme",
+  "description": ""
 }
