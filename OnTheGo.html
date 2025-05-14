@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OnTheGo(IN) - Plan Your Indian Trip</title>
+  <link rel="stylesheet" href="OnTheGo.css">
+</head>
+<body>
+  <div class="container">
+    <h1>OnTheGo(IN)</h1>
+    <div class="input-row">
+      <div class="input-group">
+        <label for="visit-date">Date of Visit</label>
+        <input type="date" id="visit-date" min="2025-05-14" />
+      </div>
+      <div class="input-group">
+        <label for="state-select">State</label>
+        <div class="custom-select" id="state-select-container">
+          <input type="text" id="state-input" autocomplete="off" placeholder="Type or select state..." />
+          <div class="dropdown" id="state-dropdown"></div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="city-select">City</label>
+        <div class="custom-select" id="city-select-container">
+          <input type="text" id="city-input" autocomplete="off" placeholder="Type or select city..." disabled />
+          <div class="dropdown" id="city-dropdown"></div>
+        </div>
+      </div>
+      <button id="apply-btn">Apply</button>
+    </div>
+  </div>
+  <script src="OnTheGo.js"></script>
+</body>
+</html>
