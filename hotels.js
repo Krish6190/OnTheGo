@@ -1,59 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  const checkin = params.get('checkin');
-  const checkout = params.get('checkout');
-  const state = params.get('state');
-  const city = params.get('city');
   const hotelContainer = document.getElementById('hotelContainer');
-
-  // Helper to convert DD-MM-YYYY to YYYY-MM-DD
-  function toSerpApiDate(ddmmyyyy) {
-    const [dd, mm, yyyy] = ddmmyyyy.split('-');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  const SERPAPI_KEY = 'eadef4549d21740eaae31ce0a8a59680324694c17e613fb4d37aa08f6507d9d7';
+  const backendUrl = 'https://your-render-app.onrender.com/api/hotels'; // Replace with your Render URL
 
   async function fetchHotels() {
     hotelContainer.innerHTML = '<div class="loading">Loading hotels...</div>';
-    const url = `https://serpapi.com/search?engine=google_hotels` +
-      `&api_key=${SERPAPI_KEY}` +
-      `&q=${encodeURIComponent(city + ', ' + state)}` +
-      `&check_in_date=${toSerpApiDate(checkin)}` +
-      `&check_out_date=${toSerpApiDate(checkout)}` +
-      `&adults=2`;
-
+    
     try {
-      const response = await fetch(url);
-      const data = await response.json();
-      // The hotels are usually in data.properties or data.hotels_results
-      const hotels = data.properties || data.hotels_results || [];
+      const response = await fetch(`${backendUrl}?${params.toString()}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const hotels = await response.json();
       showHotels(hotels);
     } catch (error) {
-      hotelContainer.innerHTML = '<div class="error">Error loading hotels. Please try again later.</div>';
+      console.error('Fetch Error:', error);
+      hotelContainer.innerHTML = `
+        <div class="error">
+          Error loading hotels: ${error.message}<br>
+          Please try again later.
+        </div>
+      `;
     }
   }
 
   function showHotels(hotels) {
     hotelContainer.innerHTML = '';
+    
     if (!hotels.length) {
-      hotelContainer.innerHTML = '<div class="error">No hotels found for your search.</div>';
+      hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
       return;
     }
+
     hotels.forEach(hotel => {
-      const price = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || 'N/A';
-      const rating = hotel.overall_rating || hotel.rating || 'N/A';
-      const desc = hotel.description || '';
-      const name = hotel.name || hotel.title || 'Unnamed Hotel';
-      const img = hotel.images && hotel.images.length ? hotel.images[0] : '';
       const card = document.createElement('div');
       card.className = 'hotel-card';
       card.innerHTML = `
-        ${img ? `<img src="${img}" alt="${name}" style="width:100%;max-width:320px;border-radius:8px;margin-bottom:8px;">` : ''}
-        <h3>${name}</h3>
-        <div class="hotel-price">₹${price}/night</div>
-        <div class="hotel-rating">★ ${rating}</div>
-        <p>${desc}</p>
+        ${hotel.images?.length ? `
+          <img src="${hotel.images[0]}" alt="${hotel.name}" 
+               class="hotel-image" loading="lazy">` : ''}
+        <div class="hotel-info">
+          <h3>${hotel.name || 'Unnamed Hotel'}</h3>
+          <div class="price-rating">
+            <span class="hotel-price">₹${hotel.rate_per_night?.lowest || 'N/A'}/night</span>
+            <span class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</span>
+          </div>
+          ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
+          ${hotel.amenities?.length ? `
+            <div class="amenities">
+              ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
+            </div>` : ''}
+        </div>
       `;
       hotelContainer.appendChild(card);
     });
