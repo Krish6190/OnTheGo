@@ -1,6 +1,3 @@
-// onthego.js
-
-// --- Data ---
 const states = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
   "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
@@ -9,18 +6,14 @@ const states = [
   "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
   "West Bengal", "Delhi"
 ];
-
-// Example: Top 20 cities per state (you can expand this as needed)
 const stateCities = {
   "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Kadapa", "Anantapur", "Eluru", "Ongole", "Nandyal", "Machilipatnam", "Adoni", "Tenali", "Chittoor", "Proddatur", "Hindupur", "Srikakulam"],
   "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang", "Ziro", "Bomdila", "Roing", "Tezu", "Aalo", "Daporijo", "Changlang", "Khonsa", "Seppa", "Yingkiong", "Namsai", "Anini", "Along", "Dirang", "Pangin", "Ruksin"],
   "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj", "Golaghat", "Dhubri", "Bongaigaon", "Sivasagar", "North Lakhimpur", "Goalpara", "Barpeta", "Lanka", "Diphu", "Hailakandi", "Mangaldoi", "Dhekiajuli"],
   // ... Add other states similarly (for brevity, not all are filled here)
   "Delhi": ["New Delhi", "Dwarka", "Rohini", "Pitampura", "Saket", "Karol Bagh", "Janakpuri", "Lajpat Nagar", "Vasant Kunj", "Connaught Place", "Mayur Vihar", "Shahdara", "Narela", "Okhla", "Greater Kailash", "Chandni Chowk", "Rajouri Garden", "Tilak Nagar", "Vikaspuri", "Preet Vihar"],
-  // Add all other states and their top 20 cities...
 };
 
-// --- Utility Functions ---
 function filterList(list, query) {
   query = query.trim().toLowerCase();
   return list.filter(item => item.toLowerCase().includes(query));
