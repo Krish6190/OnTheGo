@@ -54,119 +54,161 @@ function setupDateAutoFormat(input) {
   });
 }
 
-// Attach to both date inputs
-setupDateAutoFormat(document.getElementById('checkin-date'));
-setupDateAutoFormat(document.getElementById('checkout-date'));
+document.addEventListener('DOMContentLoaded', function() {
+  // --- Date Picker (Flatpickr) Integration ---
+  const checkinInput = document.getElementById('checkin-date');
+  const checkoutInput = document.getElementById('checkout-date');
+  const checkinCalendarIcon = checkinInput.parentElement.querySelector('.icon-calendar');
+  const checkoutCalendarIcon = checkoutInput.parentElement.querySelector('.icon-calendar');
 
-// --- State/City Dropdown Logic ---
-let states = [];
-let stateCities = {};
+  // Attach auto-formatting
+  setupDateAutoFormat(checkinInput);
+  setupDateAutoFormat(checkoutInput);
 
-fetch('indianStatesCities.json')
-  .then(response => response.json())
-  .then(data => {
-    states = data.states;
-    stateCities = data.stateCities;
-    initializeDropdowns(states, stateCities);
-  })
-  .catch(err => {
-    alert("Failed to load states and cities data.");
-    console.error(err);
+  // Flatpickr instances
+  const checkinPicker = flatpickr(checkinInput, {
+    dateFormat: "d-m-Y",
+    minDate: "today",
+    allowInput: true,
+    clickOpens: false, // We'll open it manually
+    onChange: function(selectedDates, dateStr) {
+      checkinInput.value = dateStr;
+      checkinInput.classList.remove('invalid');
+    }
+  });
+  const checkoutPicker = flatpickr(checkoutInput, {
+    dateFormat: "d-m-Y",
+    minDate: "today",
+    allowInput: true,
+    clickOpens: false,
+    onChange: function(selectedDates, dateStr) {
+      checkoutInput.value = dateStr;
+      checkoutInput.classList.remove('invalid');
+    }
   });
 
-function initializeDropdowns(states, stateCities) {
-  const stateInput = document.getElementById('state-input');
-  const stateDropdown = document.querySelector('.state-dropdown');
-  const cityInput = document.getElementById('city-input');
-  const cityDropdown = document.querySelector('.city-dropdown');
+  // Calendar icon opens the picker
+  checkinCalendarIcon.addEventListener('click', () => {
+    checkinPicker.open();
+  });
+  checkoutCalendarIcon.addEventListener('click', () => {
+    checkoutPicker.open();
+  });
 
-  function filterList(list, query) {
-    query = query.trim().toLowerCase();
-    return list.filter(item => item.toLowerCase().includes(query));
-  }
+  // Prevent input from losing focus when clicking the icon
+  checkinCalendarIcon.addEventListener('mousedown', e => e.preventDefault());
+  checkoutCalendarIcon.addEventListener('mousedown', e => e.preventDefault());
 
-  function renderDropdown(dropdown, items, maxVisible) {
-    dropdown.innerHTML = '';
-    items.forEach((item) => {
-      const div = document.createElement('div');
-      div.className = 'dropdown-option';
-      div.textContent = item;
-      dropdown.appendChild(div);
+  // --- State/City Dropdown Logic ---
+  let states = [];
+  let stateCities = {};
+
+  fetch('indianStatesCities.json')
+    .then(response => response.json())
+    .then(data => {
+      states = data.states;
+      stateCities = data.stateCities;
+      initializeDropdowns(states, stateCities);
+    })
+    .catch(err => {
+      alert("Failed to load states and cities data.");
+      console.error(err);
     });
-    dropdown.style.display = items.length ? 'block' : 'none';
-    dropdown.style.maxHeight = (maxVisible * 44) + "px";
+
+  function initializeDropdowns(states, stateCities) {
+    const stateInput = document.getElementById('state-input');
+    const stateDropdown = document.querySelector('.state-dropdown');
+    const cityInput = document.getElementById('city-input');
+    const cityDropdown = document.querySelector('.city-dropdown');
+
+    function filterList(list, query) {
+      query = query.trim().toLowerCase();
+      return list.filter(item => item.toLowerCase().includes(query));
+    }
+
+    function renderDropdown(dropdown, items, maxVisible) {
+      dropdown.innerHTML = '';
+      items.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-option';
+        div.textContent = item;
+        dropdown.appendChild(div);
+      });
+      dropdown.style.display = items.length ? 'block' : 'none';
+      dropdown.style.maxHeight = (maxVisible * 44) + "px";
+    }
+
+    // State dropdown events
+    stateInput.addEventListener('focus', () => {
+      const filtered = filterList(states, stateInput.value);
+      renderDropdown(stateDropdown, filtered, 8);
+      stateDropdown.classList.add('active');
+    });
+
+    stateInput.addEventListener('input', () => {
+      const filtered = filterList(states, stateInput.value);
+      renderDropdown(stateDropdown, filtered, 8);
+      stateDropdown.classList.add('active');
+    });
+
+    stateInput.addEventListener('blur', () => {
+      setTimeout(() => stateDropdown.classList.remove('active'), 150);
+    });
+
+    stateDropdown.addEventListener('mousedown', (e) => {
+      if (e.target.classList.contains('dropdown-option')) {
+        stateInput.value = e.target.textContent;
+        stateDropdown.classList.remove('active');
+        cityInput.disabled = false;
+        cityInput.value = '';
+        cityDropdown.innerHTML = '';
+      }
+    });
+
+    // City dropdown events
+    cityInput.addEventListener('focus', () => {
+      if (cityInput.disabled) return;
+      const state = stateInput.value;
+      const cities = stateCities[state] || [];
+      const filtered = filterList(cities, cityInput.value);
+      renderDropdown(cityDropdown, filtered, 20);
+      cityDropdown.classList.add('active');
+    });
+
+    cityInput.addEventListener('input', () => {
+      if (cityInput.disabled) return;
+      const state = stateInput.value;
+      const cities = stateCities[state] || [];
+      const filtered = filterList(cities, cityInput.value);
+      renderDropdown(cityDropdown, filtered, 20);
+      cityDropdown.classList.add('active');
+    });
+
+    cityInput.addEventListener('blur', () => {
+      setTimeout(() => cityDropdown.classList.remove('active'), 150);
+    });
+
+    cityDropdown.addEventListener('mousedown', (e) => {
+      if (e.target.classList.contains('dropdown-option')) {
+        cityInput.value = e.target.textContent;
+        cityDropdown.classList.remove('active');
+      }
+    });
+
+    // --- Dropdowns close if you click anywhere except their respective input/dropdown ---
+    document.addEventListener('mousedown', (e) => {
+      if (!stateInput.contains(e.target) && !stateDropdown.contains(e.target)) {
+        stateDropdown.classList.remove('active');
+      }
+      if (!cityInput.contains(e.target) && !cityDropdown.contains(e.target)) {
+        cityDropdown.classList.remove('active');
+      }
+    });
   }
 
-  // State dropdown events
-  stateInput.addEventListener('focus', () => {
-    const filtered = filterList(states, stateInput.value);
-    renderDropdown(stateDropdown, filtered, 8);
-    stateDropdown.classList.add('active');
+  // --- Apply button animation ---
+  document.getElementById('apply-btn').addEventListener('click', function() {
+    this.classList.add('clicked');
+    setTimeout(() => this.classList.remove('clicked'), 200);
   });
-
-  stateInput.addEventListener('input', () => {
-    const filtered = filterList(states, stateInput.value);
-    renderDropdown(stateDropdown, filtered, 8);
-    stateDropdown.classList.add('active');
-  });
-
-  stateInput.addEventListener('blur', () => {
-    setTimeout(() => stateDropdown.classList.remove('active'), 150);
-  });
-
-  stateDropdown.addEventListener('mousedown', (e) => {
-    if (e.target.classList.contains('dropdown-option')) {
-      stateInput.value = e.target.textContent;
-      stateDropdown.classList.remove('active');
-      cityInput.disabled = false;
-      cityInput.value = '';
-      cityDropdown.innerHTML = '';
-    }
-  });
-
-  // City dropdown events
-  cityInput.addEventListener('focus', () => {
-    if (cityInput.disabled) return;
-    const state = stateInput.value;
-    const cities = stateCities[state] || [];
-    const filtered = filterList(cities, cityInput.value);
-    renderDropdown(cityDropdown, filtered, 20);
-    cityDropdown.classList.add('active');
-  });
-
-  cityInput.addEventListener('input', () => {
-    if (cityInput.disabled) return;
-    const state = stateInput.value;
-    const cities = stateCities[state] || [];
-    const filtered = filterList(cities, cityInput.value);
-    renderDropdown(cityDropdown, filtered, 20);
-    cityDropdown.classList.add('active');
-  });
-
-  cityInput.addEventListener('blur', () => {
-    setTimeout(() => cityDropdown.classList.remove('active'), 150);
-  });
-
-  cityDropdown.addEventListener('mousedown', (e) => {
-    if (e.target.classList.contains('dropdown-option')) {
-      cityInput.value = e.target.textContent;
-      cityDropdown.classList.remove('active');
-    }
-  });
-
-  // Click outside to close dropdowns
-  document.addEventListener('mousedown', (e) => {
-    if (!stateInput.contains(e.target) && !stateDropdown.contains(e.target)) {
-      stateDropdown.classList.remove('active');
-    }
-    if (!cityInput.contains(e.target) && !cityDropdown.contains(e.target)) {
-      cityDropdown.classList.remove('active');
-    }
-  });
-}
-
-// --- Apply button animation ---
-document.getElementById('apply-btn').addEventListener('click', function() {
-  this.classList.add('clicked');
-  setTimeout(() => this.classList.remove('clicked'), 200);
 });
