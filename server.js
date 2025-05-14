@@ -25,7 +25,7 @@ app.get('/api/hotels', async (req, res) => {
     url.searchParams.set('check_in_date', convertDate(checkin));
     url.searchParams.set('check_out_date', convertDate(checkout));
     url.searchParams.set('adults', '2');
-    const response = await fetch(url);
+    const response = await fetch(url); 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     const hotels = data.properties || data.hotels_results || [];
