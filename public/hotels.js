@@ -24,37 +24,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function showHotels(hotels) {
-    hotelContainer.innerHTML = '';
-    
-    if (!hotels.length) {
-      hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
-      return;
+function showHotels(hotels) {
+  hotelContainer.innerHTML = '';
+
+  if (!hotels.length) {
+    hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
+    return;
+  }
+
+  hotels.forEach(hotel => {
+    // Get price as a number or string, remove $ if present, and format as INR
+    let price = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
+    if (typeof price === 'string') {
+      price = price.replace(/[^0-9.]/g, ''); // Remove any $ or non-numeric
+    }
+    if (price) {
+      // Format as Indian Rupees with commas
+      price = '₹' + Number(price).toLocaleString('en-IN') + '/night';
+    } else {
+      price = '₹N/A/night';
     }
 
-    hotels.forEach(hotel => {
-      const card = document.createElement('div');
-      card.className = 'hotel-card';
-      card.innerHTML = `
-        ${hotel.images?.length ? `
-          <img src="${hotel.images[0]}" alt="${hotel.name}" 
-               class="hotel-image" loading="lazy">` : ''}
-        <div class="hotel-info">
-          <h3>${hotel.name || 'Unnamed Hotel'}</h3>
-          <div class="price-rating">
-            <span class="hotel-price">₹${hotel.rate_per_night?.lowest || 'N/A'}/night</span>
-            <span class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</span>
-          </div>
-          ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
-          ${hotel.amenities?.length ? `
-            <div class="amenities">
-              ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
-            </div>` : ''}
-        </div>
-      `;
-      hotelContainer.appendChild(card);
-    });
-  }
+    const card = document.createElement('div');
+    card.className = 'hotel-card';
+    card.innerHTML = `
+      ${hotel.images?.length ? `
+        <img src="${hotel.images[0]}" alt="${hotel.name}" 
+             class="hotel-image" loading="lazy">` : ''}
+      <div class="hotel-info">
+        <h3>${hotel.name || 'Unnamed Hotel'}</h3>
+        <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
+        <div class="hotel-price">${price}</div>
+        ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
+        ${hotel.amenities?.length ? `
+          <div class="amenities">
+            ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
+          </div>` : ''}
+      </div>
+    `;
+    hotelContainer.appendChild(card);
+  });
+}
 
   fetchHotels();
 });
