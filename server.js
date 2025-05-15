@@ -66,7 +66,7 @@ function convertDate(ddmmyyyy) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all for SPA (must be last)
-app.get('/*', (req, res) => {
+app.get(/^\/(?!api\/).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
