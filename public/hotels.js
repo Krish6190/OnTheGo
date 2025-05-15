@@ -34,8 +34,8 @@ function showHotels(hotels) {
 
   const USD_TO_INR = 83; // Update this rate as needed
 
-  hotels.forEach(hotel => {
-    // Extract the price as a number from possible formats
+  // Map hotels to include priceINR, then filter out those with 'N/A'
+  const hotelsWithINR = hotels.map(hotel => {
     let priceUSD = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
     if (typeof priceUSD === 'string') {
       priceUSD = priceUSD.replace(/[^0-9.]/g, ''); // Remove any non-numeric
@@ -44,7 +44,15 @@ function showHotels(hotels) {
     if (priceUSD) {
       priceINR = '₹' + Math.round(Number(priceUSD) * USD_TO_INR).toLocaleString('en-IN') + '/night';
     }
+    return { ...hotel, priceINR };
+  }).filter(hotel => hotel.priceINR !== 'N/A'); // Filter out hotels with 'N/A' price
 
+  if (!hotelsWithINR.length) {
+    hotelContainer.innerHTML = '<div class="error">No hotels with valid price found for your search criteria.</div>';
+    return;
+  }
+
+  hotelsWithINR.forEach(hotel => {
     const card = document.createElement('div');
     card.className = 'hotel-card';
     card.innerHTML = `
@@ -54,7 +62,7 @@ function showHotels(hotels) {
       <div class="hotel-info">
         <h3>${hotel.name || 'Unnamed Hotel'}</h3>
         <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
-        <div class="hotel-price">${priceINR}</div>
+        <div class="hotel-price">${hotel.priceINR}</div>
         ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
         ${hotel.amenities?.length ? `
           <div class="amenities">
