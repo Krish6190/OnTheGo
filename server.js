@@ -63,7 +63,7 @@ function convertDate(ddmmyyyy) {
 }
 
 // Catch-all route for SPA (must be last)
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
