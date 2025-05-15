@@ -6,7 +6,11 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://onthego-jiti.onrender.com',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: false
+}));
 app.use(express.json());
 
 // API endpoint for hotels (must come before static/catch-all)
