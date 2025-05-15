@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const hotelContainer = document.getElementById('hotelContainer');
-  const backendUrl = 'https://onthego-jiti.onrender.com/api/hotels';
+  const backendUrl = 'https://onthego-jiti.onrender.com/';
 
   async function fetchHotels() {
     hotelContainer.innerHTML = '<div class="loading">Loading hotels...</div>';
