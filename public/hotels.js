@@ -32,17 +32,17 @@ function showHotels(hotels) {
     return;
   }
 
+  const USD_TO_INR = 83; // Update this rate as needed
+
   hotels.forEach(hotel => {
-    // Get price as a number or string, remove $ if present, and format as INR
-    let price = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
-    if (typeof price === 'string') {
-      price = price.replace(/[^0-9.]/g, ''); // Remove any $ or non-numeric
+    // Extract the price as a number from possible formats
+    let priceUSD = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
+    if (typeof priceUSD === 'string') {
+      priceUSD = priceUSD.replace(/[^0-9.]/g, ''); // Remove any non-numeric
     }
-    if (price) {
-      // Format as Indian Rupees with commas
-      price = '₹' + Number(price).toLocaleString('en-IN') + '/night';
-    } else {
-      price = '₹N/A/night';
+    let priceINR = 'N/A';
+    if (priceUSD) {
+      priceINR = '₹' + Math.round(Number(priceUSD) * USD_TO_INR).toLocaleString('en-IN') + '/night';
     }
 
     const card = document.createElement('div');
@@ -54,7 +54,7 @@ function showHotels(hotels) {
       <div class="hotel-info">
         <h3>${hotel.name || 'Unnamed Hotel'}</h3>
         <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
-        <div class="hotel-price">${price}</div>
+        <div class="hotel-price">${priceINR}</div>
         ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
         ${hotel.amenities?.length ? `
           <div class="amenities">
@@ -65,6 +65,7 @@ function showHotels(hotels) {
     hotelContainer.appendChild(card);
   });
 }
+
 
   fetchHotels();
 });
