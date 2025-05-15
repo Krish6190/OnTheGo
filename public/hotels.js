@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const hotelContainer = document.getElementById('hotelContainer');
-  const backendUrl = 'https://onthego-jiti.onrender.com';
+  // No need for backendUrl if frontend and backend are on same domain
 
   async function fetchHotels() {
     hotelContainer.innerHTML = '<div class="loading">Loading hotels...</div>';
     
     try {
-      const response = await fetch(`${backendUrl}?${params.toString()}`);
+      // FIX: Use the correct endpoint!
+      const response = await fetch(`/api/hotels?${params.toString()}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const hotels = await response.json();
