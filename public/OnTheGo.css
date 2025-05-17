@@ -54,9 +54,8 @@ body {
   font-size: 2rem;
   font-weight: 700;
   color: var(--grey-white);
-  text-transform: uppercase;
   letter-spacing: 1px;
-  opacity: 0.9;
+  margin-left: 30px;
 }
 
 
@@ -71,7 +70,7 @@ body {
   margin-top: calc(5vh + 50px);
 }
 
-.booking-container-{
+.booking-container- {
   flex: 1;
   display: flex;
   align-items: center;
