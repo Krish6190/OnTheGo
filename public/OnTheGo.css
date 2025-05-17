@@ -71,7 +71,7 @@ body {
   margin-top: calc(5vh + 50px);
 }
 
-.booking-container {
+.booking-container-{
   flex: 1;
   display: flex;
   align-items: center;
