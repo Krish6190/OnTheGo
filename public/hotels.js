@@ -53,6 +53,7 @@ function showHotels(hotels) {
     const card = document.createElement('div');
     card.className = 'hotel-card';
     card.innerHTML = `
+      <div class="hotel-info">
         <h3>${hotel.name || 'Unnamed Hotel'}</h3>
         <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
         <div class="hotel-price">${hotel.priceINR}</div>
