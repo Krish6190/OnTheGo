@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const fetch = require('node-fetch'); // Use v2.x for CommonJS compatibility
+const fetch = require('node-fetch');
 const cors = require('cors');
 const path = require('path');
 
@@ -22,8 +22,6 @@ app.get('/api/hotels', async (req, res) => {
   try {
     const { checkin, checkout, city, state } = req.query;
     console.log('API params:', { checkin, checkout, city, state });
-
-    // Parameter Validation
     if (!checkin || !checkout || !city || !state) {
       return res.status(400).json({
         error: 'Missing parameters',
@@ -31,7 +29,7 @@ app.get('/api/hotels', async (req, res) => {
       });
     }
 
-    // Build SerpAPI URL
+    //SerpAPI URL
     const apiUrl = new URL('https://serpapi.com/search');
     apiUrl.searchParams.set('engine', 'google_hotels');
     apiUrl.searchParams.set('api_key', process.env.SERPAPI_KEY);
@@ -60,16 +58,12 @@ app.get('/api/hotels', async (req, res) => {
   }
 });
 
-// Date Conversion Helper
 function convertDate(ddmmyyyy) {
   const [dd, mm, yyyy] = ddmmyyyy.split('-');
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-
-// SPA Catch-all (Regex pattern for Express 5+ compatibility)
 app.get(/^\/(?!api\/).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

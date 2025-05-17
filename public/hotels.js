@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const hotelContainer = document.getElementById('hotelContainer');
-  // No need for backendUrl if frontend and backend are on same domain
 
   async function fetchHotels() {
     hotelContainer.innerHTML = '<div class="loading">Loading hotels...</div>';
     
     try {
-      // FIX: Use the correct endpoint!
       const response = await fetch(`/api/hotels?${params.toString()}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
@@ -32,20 +30,19 @@ function showHotels(hotels) {
     return;
   }
 
-  const USD_TO_INR = 83; // Update this rate as needed
+  const USD_TO_INR = 83; // Update this rate 
 
-  // Map hotels to include priceINR, then filter out those with 'N/A'
   const hotelsWithINR = hotels.map(hotel => {
     let priceUSD = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
     if (typeof priceUSD === 'string') {
-      priceUSD = priceUSD.replace(/[^0-9.]/g, ''); // Remove any non-numeric
+      priceUSD = priceUSD.replace(/[^0-9.]/g, '');
     }
     let priceINR = 'N/A';
     if (priceUSD) {
       priceINR = '₹' + Math.round(Number(priceUSD) * USD_TO_INR).toLocaleString('en-IN') + '/night';
     }
     return { ...hotel, priceINR };
-  }).filter(hotel => hotel.priceINR !== 'N/A'); // Filter out hotels with 'N/A' price
+  }).filter(hotel => hotel.priceINR !== 'N/A'); // Filter out unavailabe hotels
 
   if (!hotelsWithINR.length) {
     hotelContainer.innerHTML = '<div class="error">No hotels with valid price found for your search criteria.</div>';
