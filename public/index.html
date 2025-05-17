@@ -2,56 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OnTheGo(IN) - Plan Your Indian Trip</title>
   <link rel="stylesheet" href="OnTheGo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-  <header class="main-header">
-    <div class="logo-container">
-      <div class="logo">OnTheGo<span class="in-logo">(IN)</span></div>
-    </div>
-  </header>
-  <main class="booking-container">
-    <div class="booking-card">
-      <div class="input-row">
-        <!-- Date Inputs -->
-        <div class="input-group">
-          <label for="checkin-date">CHECK-IN</label>
-          <div class="input-wrapper">
-            <input type="text" id="checkin-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
-            <i class="icon-calendar"></i>
-          </div>
-        </div>
-        <div class="input-group">
-          <label for="checkout-date">CHECK-OUT</label>
-          <div class="input-wrapper">
-            <input type="text" id="checkout-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
-            <i class="icon-calendar"></i>
-          </div>
-        </div>
-
-        <!-- State/City Dropdowns -->
-        <div class="input-group">
-          <label for="state-select">STATE</label>
-          <select id="state-select" class="custom-select">
-            <option value="">Select State</option>
-            <!-- States will be populated by JS -->
-          </select>
-        </div>
-        <div class="input-group">
-          <label for="city-select">CITY</label>
-          <select id="city-select" class="custom-select" disabled>
-            <option value="">Select City</option>
-          </select>
-        </div>
-
-        <!-- Submit Button -->
-        <button id="apply-btn" class="primary-cta" disabled>
-          <span class="cta-text">SEARCH HOTELS</span>
-        </button>
+  <div class="hero-section">
+    <div class="overlay"></div>
+    <header class="main-header">
+      <div class="logo-container">
+        <div class="logo">OnTheGo<span class="in-logo">(IN)</span></div>
       </div>
-    </div>
-  </main>
+    </header>
+    <main class="booking-container">
+      <div class="hero-content">
+        <h1 class="hero-title">Find Your Perfect Stay</h1>
+        <div class="booking-card">
+          <div class="input-row">
+            <!-- Date Inputs -->
+            <div class="input-group">
+              <label for="checkin-date">CHECK-IN</label>
+              <div class="input-wrapper">
+                <input type="text" id="checkin-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+                <i class="icon-calendar fas fa-calendar-alt"></i>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="checkout-date">CHECK-OUT</label>
+              <div class="input-wrapper">
+                <input type="text" id="checkout-date" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+                <i class="icon-calendar fas fa-calendar-alt"></i>
+              </div>
+            </div>
+
+            <!-- Location Search -->
+            <div class="input-group">
+              <label for="state-select">LOCATION</label>
+              <select id="state-select" class="custom-select">
+                <option value="">Select State</option>
+                <!-- States will be populated by JS -->
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button id="apply-btn" class="primary-cta" disabled>
+              <span class="cta-text">SEARCH HOTELS</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
   <script src="OnTheGo.js"></script>
 </body>
 </html>
