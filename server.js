@@ -38,7 +38,7 @@ app.get('/api/hotels', async (req, res) => {
     apiUrl.searchParams.set('adults', '2');
 
     // Fetch from SerpAPI
-    const response = await fetch(apiUrl.toString()); // Add .toString() for URL safety
+    const response = await fetch(apiUrl.toString());
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`SerpAPI Error: ${response.status} - ${errorText}`);
