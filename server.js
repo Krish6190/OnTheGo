@@ -8,7 +8,6 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT;
 
-// CORS Configuration
 app.use(cors({
   origin: 'https://onthego-jiti.onrender.com',
   methods: ['GET', 'POST', 'OPTIONS'],
