@@ -96,7 +96,7 @@ To deploy your own instance:
 
 This project is licensed under the ISC License - see the LICENSE file for details.
 
-## Author
+## Implemented by
 
 Krish
 
