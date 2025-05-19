@@ -63,6 +63,7 @@ function showHotels(hotels) {
             ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
           </div>` : ''}
       </div>
+      <br>
     `;
     hotelContainer.appendChild(card);
   });
