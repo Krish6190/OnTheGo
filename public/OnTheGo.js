@@ -433,4 +433,3 @@ function setupLocationSearch() {
   checkoutInput.addEventListener('input', validateForm);
   searchInput.addEventListener('input', validateForm);
 }
-
