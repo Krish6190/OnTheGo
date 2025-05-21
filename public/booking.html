@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Your Hotel - OnTheGo</title>
+  <link rel="stylesheet" href="OnTheGo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container" style="margin-left: 30px;">
+      <div class="logo" style="color:slateblue;">OnTheGo<span class="in-logo">(IN)</span></div>
+    </div>
+  </header>
+  
+  <main class="booking-container-">
+    <div class="booking-details">
+      <h1>Complete Your Booking</h1>
+      <div class="hotel-details-card">
+        <div class="hotel-info-booking">
+          <h2 id="hotelName">Loading hotel information...</h2>
+          <div class="hotel-rating" id="hotelRating">★ --</div>
+          <div class="hotel-price" id="hotelPrice">--</div>
+          <div id="hotelDescription" class="description-full">Loading description...</div>
+          
+          <div class="amenities-container">
+            <h3>Amenities</h3>
+            <div id="amenitiesList" class="amenities">
+            </div>
+          </div>
+        </div>
+        
+        <div class="booking-form">
+          <h3>Guest Information</h3>
+          <form id="bookingForm">
+            <div class="form-row">
+              <div class="input-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" class="form-input" required placeholder="Enter your full name">
+              </div>
+              <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-input" required placeholder="Enter your email">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="input-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" required placeholder="Enter your phone number">
+              </div>
+              <div class="input-group">
+                <label for="guests">Number of Guests</label>
+                <select id="guests" class="form-input">
+                  <option value="1">1 Guest</option>
+                  <option value="2" selected>2 Guests</option>
+                  <option value="3">3 Guests</option>
+                  <option value="4">4 Guests</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="input-group">
+                <label for="checkInDate">Check-in Date</label>
+                <div class="input-wrapper">
+                  <input type="text" id="checkInDate" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+                  <i class="icon-calendar fas fa-calendar-alt"></i>
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="checkOutDate">Check-out Date</label>
+                <div class="input-wrapper">
+                  <input type="text" id="checkOutDate" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+                  <i class="icon-calendar fas fa-calendar-alt"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="input-group special-requests">
+                <label for="specialRequests">Special Requests (Optional)</label>
+                <textarea id="specialRequests" class="form-input" rows="3" placeholder="Any special requests or requirements?"></textarea>
+              </div>
+            </div>
+            
+            <div class="booking-summary">
+              <h3>Booking Summary</h3>
+              <div class="summary-row">
+                <span>Room Rate:</span>
+                <span id="summaryRate">--</span>
+              </div>
+              <div class="summary-row">
+                <span>Number of Nights:</span>
+                <span id="summaryNights">--</span>
+              </div>
+              <div class="summary-row total">
+                <span>Total Amount:</span>
+                <span id="summaryTotal">--</span>
+              </div>
+            </div>
+            
+            <button type="submit" id="bookNowBtn" class="primary-cta booking-btn">Confirm Booking</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script src="booking.js"></script>
+</body>
+</html>
+

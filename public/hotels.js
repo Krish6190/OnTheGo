@@ -38,10 +38,19 @@ function showHotels(hotels) {
       priceUSD = priceUSD.replace(/[^0-9.]/g, '');
     }
     let priceINR = 'N/A';
+    let priceRaw = 0;
     if (priceUSD) {
-      priceINR = '₹' + Math.round(Number(priceUSD) * USD_TO_INR).toLocaleString('en-IN') + '/night';
+      priceRaw = Math.round(Number(priceUSD) * USD_TO_INR);
+      priceINR = '₹' + priceRaw.toLocaleString('en-IN') + '/night';
     }
-    return { ...hotel, priceINR };
+    return { 
+      ...hotel, 
+      priceINR, 
+      priceRaw, 
+      location: params.get('city') + ', ' + params.get('state') || 'India',
+      checkin: params.get('checkin'),
+      checkout: params.get('checkout')
+    };
   }).filter(hotel => hotel.priceINR !== 'N/A'); // Filter out unavailabe hotels
 
   if (!hotelsWithINR.length) {
@@ -62,10 +71,27 @@ function showHotels(hotels) {
           <div class="amenities">
             ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
           </div>` : ''}
+        <a href="/bookings?hotel=${encodeURIComponent(hotel.name || 'Unnamed Hotel')}" class="primary-cta hotel-booking-btn">Book Now</a>
       </div>
       <br>
     `;
     hotelContainer.appendChild(card);
+
+    const bookNowBtn = card.querySelector('.hotel-booking-btn');
+    bookNowBtn.addEventListener('click', () => {
+      const hotelData = {
+        name: hotel.name || 'Unnamed Hotel',
+        overall_rating: hotel.overall_rating || 'N/A',
+        priceINR: hotel.priceINR,
+        priceRaw: hotel.priceRaw,
+        description: hotel.description || 'No description available',
+        amenities: hotel.amenities || [],
+        location: hotel.location,
+        checkin: hotel.checkin,
+        checkout: hotel.checkout
+      };
+      sessionStorage.setItem('hotelData', JSON.stringify(hotelData));
+    });
   });
 }
 
