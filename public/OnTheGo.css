@@ -691,3 +691,132 @@ textarea.form-input {
         font-size: 0.95rem;
     }
 }
+.invalid-input {
+  border-color: #dc3545 !important;
+  background-color: #fff8f8 !important;
+}
+
+.invalid-input:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+.nav-actions {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+}
+
+.secondary-cta {
+    background: #f5f7fa;
+    color: var(--text-dark);
+    border: 1.5px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.secondary-cta:hover {
+    background: #e9ecef;
+    border-color: #d3d7db;
+}
+
+@media (max-width: 768px) {
+    .nav-actions {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .secondary-cta {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+}
+.form-input[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    color: var(--text-dark);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.form-input[readonly]:focus {
+    border-color: #e0e0e0;
+    box-shadow: none;
+}
+.form-input[readonly]:hover {
+    background-color: #f8f9fa;
+    border-color: #e0e0e0;
+}
+
+input[type="text"][readonly].form-input {
+    padding-right: 16px;  
+}
+
+.booking-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hotel-booking-btn {
+    min-width: 120px;
+    text-align: center;
+    position: relative;
+}
+
+.hotel-booking-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.form-note {
+    background-color: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    border: 1px solid #eaedf0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.text-link {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+.readonly-indicator {
+    cursor: help;
+}

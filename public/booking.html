@@ -16,6 +16,10 @@
   </header>
   
   <main class="booking-container-">
+    <div class="nav-actions">
+      <button onclick="window.location.href='/'" class="secondary-cta">← Back to Search</button>
+      <button onclick="history.back()" class="secondary-cta">← Back to Hotels</button>
+    </div>
     <div class="booking-details">
       <h1>Complete Your Booking</h1>
       <div class="hotel-details-card">
@@ -53,29 +57,18 @@
               </div>
               <div class="input-group">
                 <label for="guests">Number of Guests</label>
-                <select id="guests" class="form-input">
-                  <option value="1">1 Guest</option>
-                  <option value="2" selected>2 Guests</option>
-                  <option value="3">3 Guests</option>
-                  <option value="4">4 Guests</option>
-                </select>
+                <input type="text" id="guests" class="form-input" readonly>
               </div>
             </div>
             
             <div class="form-row">
               <div class="input-group">
                 <label for="checkInDate">Check-in Date</label>
-                <div class="input-wrapper">
-                  <input type="text" id="checkInDate" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
-                  <i class="icon-calendar fas fa-calendar-alt"></i>
-                </div>
+                <input type="text" id="checkInDate" class="form-input" readonly>
               </div>
               <div class="input-group">
                 <label for="checkOutDate">Check-out Date</label>
-                <div class="input-wrapper">
-                  <input type="text" id="checkOutDate" class="date-input" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
-                  <i class="icon-calendar fas fa-calendar-alt"></i>
-                </div>
+                <input type="text" id="checkOutDate" class="form-input" readonly>
               </div>
             </div>
             

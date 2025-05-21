@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const hotelName = params.get('hotel');
   
   if (!hotelName) {
-    // If no hotel name is provided, redirect to home page
     window.location.href = '/';
     return;
   }
@@ -35,85 +34,239 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     amenitiesList.innerHTML = '<span class="amenity">Information not available</span>';
   }
-  
   const checkInDateInput = document.getElementById('checkInDate');
   const checkOutDateInput = document.getElementById('checkOutDate');
+  const guestsInput = document.getElementById('guests');
   
-  if (hotelData.checkin && hotelData.checkout) {
-    checkInDateInput.value = hotelData.checkin;
-    checkOutDateInput.value = hotelData.checkout;
-  } else {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowFormatted = formatDate(tomorrow);
-    checkInDateInput.value = tomorrowFormatted;
+  checkInDateInput.value = hotelData.checkin || '';
+  checkOutDateInput.value = hotelData.checkout || '';
+  guestsInput.value = '2 Guests'; 
+  
+  // Add tooltips and visual indicators for readonly fields
+  [checkInDateInput, checkOutDateInput, guestsInput].forEach(input => {
+    input.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
     
-    const dayAfterTomorrow = new Date();
-    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-    const dayAfterTomorrowFormatted = formatDate(dayAfterTomorrow);
-    checkOutDateInput.value = dayAfterTomorrowFormatted;
-  }
+    // Add a small info icon next to readonly fields
+    const inputWrapper = input.parentElement;
+    const infoIcon = document.createElement('span');
+    infoIcon.className = 'fas fa-info-circle readonly-indicator';
+    infoIcon.style.color = '#666';
+    infoIcon.style.marginLeft = '8px';
+    infoIcon.style.fontSize = '14px';
+    inputWrapper.style.display = 'flex';
+    inputWrapper.style.alignItems = 'center';
+    inputWrapper.appendChild(infoIcon);
+  });
+  
+  // Add a note about readonly fields
+  const formNote = document.createElement('div');
+  formNote.className = 'form-note';
+  formNote.innerHTML = `
+    <i class="fas fa-info-circle"></i>
+    Check-in date, check-out date, and number of guests are set from your search. 
+    <a href="/" class="text-link">Return to search</a> to modify these details.
+  `;
+  document.querySelector('.booking-form').insertBefore(
+    formNote, 
+    document.querySelector('.form-row')
+  );
   
   updateBookingSummary();
-  
-  checkInDateInput.addEventListener('change', updateBookingSummary);
-  checkOutDateInput.addEventListener('change', updateBookingSummary);
-  
+
+  function validateForm() {
+    const requiredFields = {
+      'fullName': 'Full Name',
+      'email': 'Email',
+      'phone': 'Phone Number'
+    };
+
+    let isValid = true;
+    let firstInvalidField = null;
+    const errorMessages = [];
+
+    // Check each required field
+    for (const [fieldId, fieldName] of Object.entries(requiredFields)) {
+      const field = document.getElementById(fieldId);
+      const isFieldValid = field.value.trim() !== '';
+      
+      field.classList.toggle('invalid-input', !isFieldValid);
+      
+      if (!isFieldValid) {
+        errorMessages.push(`${fieldName} is required`);
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = field;
+      }
+    }
+    const emailField = document.getElementById('email');
+    if (emailField.value.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailField.value.trim())) {
+        errorMessages.push('Please enter a valid email address (e.g., example@domain.com)');
+        emailField.classList.add('invalid-input');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = emailField;
+      }
+    }
+
+    const phoneField = document.getElementById('phone');
+    if (phoneField.value.trim()) {
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phoneField.value.trim())) {
+        errorMessages.push('Phone number must be exactly 10 digits');
+        phoneField.classList.add('invalid-input');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = phoneField;
+      }
+    }
+
+    if (!isValid && errorMessages.length > 0) {
+      alert('Please correct the following:\n\n' + errorMessages.join('\n'));
+    }
+
+    if (firstInvalidField) {
+      firstInvalidField.focus();
+    }
+
+    return isValid;
+  }
   document.getElementById('bookingForm').addEventListener('submit', function(e) {
     e.preventDefault();
-
+    
+    if (!validateForm()) {
+      alert('Please fill in all required fields correctly.');
+      return;
+    }
+    
     const bookingData = {
       hotel: hotelData.name,
-      guest: document.getElementById('fullName').value,
-      email: document.getElementById('email').value,
-      phone: document.getElementById('phone').value,
-      guests: document.getElementById('guests').value,
+      guest: document.getElementById('fullName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      guests: guestsInput.value,
       checkIn: checkInDateInput.value,
       checkOut: checkOutDateInput.value,
-      specialRequests: document.getElementById('specialRequests')?.value || '',
+      specialRequests: document.getElementById('specialRequests')?.value.trim() || '',
       totalAmount: document.getElementById('summaryTotal').textContent
     };
 
-    console.log('Booking Data:', bookingData);
-    
-    alert('Booking confirmed! Thank you for choosing ' + hotelData.name);
-    
-    window.location.href = '/';
+    if (confirm(
+      `Please confirm your booking details:\n
+  Hotel: ${bookingData.hotel}
+  Guest Name: ${bookingData.guest}
+  Check-in: ${bookingData.checkIn}
+  Check-out: ${bookingData.checkOut}
+  Number of Guests: ${bookingData.guests}
+  Total Amount: ${bookingData.totalAmount}
+  
+  Click OK to confirm your booking.`
+    )) {
+      console.log('Booking Data:', bookingData);
+      alert('Booking confirmed!\n\nThank you for choosing ' + hotelData.name + '\nA confirmation email will be sent shortly.');
+      sessionStorage.removeItem('hotelData');  
+      window.location.href = '/';
+    }
+  });
+
+  const formInputs = document.querySelectorAll('.form-input:not([readonly])');
+  formInputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      if (this.value.trim() === '') {
+        this.classList.add('invalid-input');
+      } else {
+        if (this.id === 'email') {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const value = this.value.trim();
+          
+          if (value.length > 0) {
+            if (!emailRegex.test(value)) {
+              this.classList.add('invalid-input');
+              this.title = "Please enter a valid email (e.g., name@example.com)";
+            } else {
+              this.classList.remove('invalid-input');
+              this.title = "";
+            }
+          }
+        }
+        else if (this.id === 'phone') {
+          const phoneRegex = /^\d{10}$/;
+          const value = this.value.trim();
+          
+          if (value.length > 0) {
+            if (!/^\d*$/.test(value)) {
+              this.classList.add('invalid-input');
+              this.title = "Please enter numbers only";
+            } else if (value.length !== 10) {
+              this.classList.add('invalid-input');
+              this.title = `Phone number must be 10 digits (currently ${value.length} digits)`;
+            } else {
+              this.classList.remove('invalid-input');
+              this.title = "";
+            }
+          }
+        }
+        else {
+          this.classList.remove('invalid-input');
+        }
+      }
+    });
+    input.addEventListener('input', function() {
+      this.classList.remove('invalid-input');
+    });
   });
   
-  function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-  
   function calculateNights(checkInDate, checkOutDate) {
-    const checkIn = parseDate(checkInDate);
-    const checkOut = parseDate(checkOutDate);
-    
-    if (!checkIn || !checkOut) return 0;
-    
-    const timeDiff = checkOut.getTime() - checkIn.getTime();
-    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return nights > 0 ? nights : 0;
-  }
-  
-  function parseDate(dateString) {
-    const [day, month, year] = dateString.split('-').map(Number);
-    return new Date(year, month - 1, day);
+    try {
+      const [checkInDay, checkInMonth, checkInYear] = checkInDate.split('-').map(Number);
+      const [checkOutDay, checkOutMonth, checkOutYear] = checkOutDate.split('-').map(Number);
+      
+      if (!checkInDay || !checkInMonth || !checkInYear || 
+          !checkOutDay || !checkOutMonth || !checkOutYear) {
+        console.error('Invalid date format');
+        return 0;
+      }
+      
+      const checkIn = new Date(checkInYear, checkInMonth - 1, checkInDay);
+      const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay);
+      
+      if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+        console.error('Invalid date objects');
+        return 0;
+      }
+      
+      const timeDiff = checkOut.getTime() - checkIn.getTime();
+      const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      return nights > 0 ? nights : 0;
+    } catch (error) {
+      console.error('Error calculating nights:', error);
+      return 0;
+    }
   }
   
   function updateBookingSummary() {
-    const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
-    const totalAmount = hotelData.priceRaw * nights;
-    
-    document.getElementById('summaryNights').textContent = nights;
-    document.getElementById('summaryTotal').textContent = '₹' + totalAmount.toLocaleString('en-IN');
-    
-    const bookNowBtn = document.getElementById('bookNowBtn');
-    if (bookNowBtn) {
-      bookNowBtn.disabled = nights <= 0;
+    try {
+      if (!checkInDateInput.value || !checkOutDateInput.value) {
+        document.getElementById('summaryNights').textContent = '--';
+        document.getElementById('summaryTotal').textContent = '--';
+        return;
+      }
+
+      const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
+      if (nights <= 0) {
+        document.getElementById('summaryNights').textContent = '0';
+        document.getElementById('summaryTotal').textContent = '₹0';
+        return;
+      }
+
+      const totalAmount = hotelData.priceRaw * nights;
+      
+      document.getElementById('summaryNights').textContent = nights;
+      document.getElementById('summaryTotal').textContent = totalAmount > 0 
+        ? '₹' + totalAmount.toLocaleString('en-IN')
+        : hotelData.priceINR + ' × ' + nights;
+    } catch (error) {
+      console.error('Error updating booking summary:', error);
+      document.getElementById('summaryNights').textContent = '--';
+      document.getElementById('summaryTotal').textContent = '--';
     }
   }
 });
