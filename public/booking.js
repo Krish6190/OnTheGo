@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
   
-  document.getElementById('hotelName').textContent = hotelData.name;
-  document.getElementById('hotelRating').textContent = `★ ${hotelData.overall_rating}`;
-  document.getElementById('hotelPrice').textContent = hotelData.priceINR;
-  document.getElementById('hotelDescription').textContent = hotelData.description || 'No description available';
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
 
 
   const imageUrl = hotelData.photos?.[0] || hotelData.thumbnail || 'https://placehold.co/800x400?text=Hotel';
+
+  const hotelHeaderHTML = `
+      <h2 id="hotelName" class="hotel-name-header">${hotelData.name}</h2>
+  `;
 
   const hotelImageHTML = `
       <div class="hotel-image-large">
@@ -36,21 +36,41 @@ document.addEventListener('DOMContentLoaded', () => {
                style="width: 100%; height: 100%; object-fit: cover;">
       </div>
   `;
-  document.querySelector('.hotel-info-booking').insertAdjacentHTML('afterbegin', hotelImageHTML);
-
+  
+  const hotelBookingInfoHTML = `
+      <div class="hotel-booking-info">
+          <div class="hotel-rating" id="hotelRating">★ ${hotelData.overall_rating}</div>
+          <div class="hotel-price" id="hotelPrice">${hotelData.priceINR}</div>
+          <button class="primary-cta quick-book-btn">Book Now</button>
+      </div>
+  `;
+  
+  const hotelDetailsHTML = `
+      <div class="hotel-text-content">
+          <div id="hotelDescription" class="description-full">${hotelData.description || 'No description available'}</div>
+          <div class="amenities-container">
+              <h3>Amenities</h3>
+              <div id="amenitiesList" class="amenities">
+                  ${hotelData.amenities && hotelData.amenities.length > 0 
+                      ? hotelData.amenities.map(amenity => `<span class="amenity">${amenity}</span>`).join('')
+                      : '<span class="amenity">Information not available</span>'}
+              </div>
+          </div>
+      </div>
+  `;
+  
+  document.querySelector('.hotel-info-booking').innerHTML = 
+      hotelHeaderHTML + hotelImageHTML + hotelBookingInfoHTML + hotelDetailsHTML;
   const img = document.querySelector('.hotel-image-large img');
   img.addEventListener('error', function() {
       this.src = 'https://placehold.co/800x400?text=Hotel';
   });
   
-  const amenitiesList = document.getElementById('amenitiesList');
-  if (hotelData.amenities && hotelData.amenities.length > 0) {
-    amenitiesList.innerHTML = hotelData.amenities
-      .map(amenity => `<span class="amenity">${amenity}</span>`)
-      .join('');
-  } else {
-    amenitiesList.innerHTML = '<span class="amenity">Information not available</span>';
-  }
+  // Add click handler for the quick book button
+  document.querySelector('.quick-book-btn').addEventListener('click', function() {
+      document.getElementById('bookNowBtn').scrollIntoView({ behavior: 'smooth' });
+  });
+  
   const checkInDateInput = document.getElementById('checkInDate');
   const checkOutDateInput = document.getElementById('checkOutDate');
   const guestsInput = document.getElementById('guests');
