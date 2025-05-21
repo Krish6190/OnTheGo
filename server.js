@@ -322,6 +322,63 @@ app.get('/api/hotels', async (req, res) => {
   }
 });
 
+// API Endpoint for Hotel Details
+app.get('/api/hotels/details', async (req, res) => {
+  try {
+    const propertyToken = req.query.property_token;
+    if (!propertyToken) {
+      return res.status(400).json({ error: 'Property token is required' });
+    }
+
+    if (!process.env.SERPAPI_KEY) {
+      console.error('SERPAPI_KEY is not set in environment variables');
+      return res.status(500).json({
+        error: 'Server configuration error',
+        message: 'API key is not configured'
+      });
+    }
+
+    console.log('Fetching hotel details for property token:', propertyToken);
+    const response = await fetch(
+      `https://serpapi.com/search.json?engine=google_hotels&property_token=${propertyToken}&api_key=${process.env.SERPAPI_KEY}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`SerpAPI Error: Status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Extract images from response
+    const images = [];
+    if (data.gallery_images && Array.isArray(data.gallery_images)) {
+      data.gallery_images.forEach(img => {
+        if (img.image) {
+          images.push(img.image);
+        }
+      });
+    }
+    
+    // Also check if there's a main image
+    if (data.main_image) {
+      images.unshift(data.main_image);
+    }
+
+    // Send back just what we need
+    res.json({
+      images,
+      name: data.name,
+      description: data.description
+    });
+  } catch (error) {
+    console.error('API Error (hotel details):', error.message);
+    res.status(500).json({ 
+      error: 'Failed to fetch hotel details',
+      details: error.message
+    });
+  }
+});
+
 function convertDate(ddmmyyyy) {
   const [dd, mm, yyyy] = ddmmyyyy.split('-');
   return `${yyyy}-${mm}-${dd}`;

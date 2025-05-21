@@ -96,15 +96,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+// Function to fetch detailed hotel information including images
+async function fetchHotelDetails(propertyToken, hotelCard) {
+  try {
+    console.log('Fetching details for property token:', propertyToken);
+    const response = await fetch(`/api/hotels/details?property_token=${propertyToken}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    const data = await response.json();
+    console.log('Received hotel details:', {
+      hasImages: !!(data.images && data.images.length),
+      firstImage: data.images && data.images.length ? data.images[0] : 'None'
+    });
+    
+    if (data.images && data.images.length > 0) {
+      const imgElement = hotelCard.querySelector('.hotel-image img');
+      imgElement.src = data.images[0];
+      // Store other images for gallery if needed
+      hotelCard.dataset.images = JSON.stringify(data.images);
+    }
+  } catch (error) {
+    console.error('Error fetching hotel details:', error);
+  }
+}
+
 function showHotels(hotels) {
   console.log('Starting showHotels with', hotels.length, 'hotels');
   hotels.forEach((hotel, index) => {
+    // Extract image URLs from the initial hotel data
+    const photoUrls = [];
+    
+    // Extract images from the images array
+    if (hotel.images && Array.isArray(hotel.images)) {
+        hotel.images.forEach(img => {
+            if (img.original_image) {
+                photoUrls.push(img.original_image);
+            } else if (img.thumbnail) {
+                photoUrls.push(img.thumbnail);
+            }
+        });
+    }
+    
+    // Add other photo sources as fallback
+    if (hotel.property_thumbnail) {
+        photoUrls.push(hotel.property_thumbnail);
+    }
+    
+    if (hotel.main_photo_url) {
+        photoUrls.push(hotel.main_photo_url);
+    }
+    
+    if (hotel.serpapi_hotel_thumbnails && Array.isArray(hotel.serpapi_hotel_thumbnails)) {
+        hotel.serpapi_hotel_thumbnails.forEach(url => {
+            if (typeof url === 'string' && url.startsWith('http')) {
+                photoUrls.push(url);
+            }
+        });
+    }
+    
+    // Filter out any proxy or placeholder URLs
+    const validUrls = [...new Set(photoUrls.filter(url => 
+        url && 
+        typeof url === 'string' && 
+        url.startsWith('http') &&
+        !url.includes('placehold.co') &&
+        !url.includes('googleusercontent.com/proxy')
+    ))];
+
+    // Add valid URLs to hotel object
+    hotel.extractedPhotos = validUrls;
+    hotel.extractedThumbnail = validUrls[0] || '';
+    
     console.log(`Hotel ${index + 1}:`, {
       name: hotel.name,
       hasDescription: !!hotel.description,
       hasPhotos: Array.isArray(hotel.photos) && hotel.photos.length > 0,
       hasThumbnail: !!hotel.thumbnail,
-      parseFailed: !!hotel.parseFailed
+      parseFailed: !!hotel.parseFailed,
+      extractedImageCount: validUrls.length,
+      firstImage: validUrls.length > 0 ? validUrls[0].substring(0, 50) + '...' : 'None'
     });
   });
   
@@ -165,10 +235,25 @@ function showHotels(hotels) {
     if (hotel.deal) {
       priceINR += ` (${hotel.deal})`;
     }
+    // Use extracted photos or original photos or placeholder
+    const photos = (hotel.extractedPhotos && hotel.extractedPhotos.length > 0) ? 
+                   hotel.extractedPhotos : 
+                   (Array.isArray(hotel.photos) && hotel.photos.length > 0) ? 
+                   hotel.photos : 
+                   ['https://placehold.co/200x150?text=Hotel'];
+
+    // Use extracted thumbnail or first photo or original thumbnail or placeholder
+    const thumbnail = hotel.extractedThumbnail || 
+                      (photos.length > 0 ? photos[0] : null) || 
+                      hotel.thumbnail || 
+                      'https://placehold.co/200x150?text=Hotel';
+    
     return { 
       ...hotel, 
       priceINR, 
       priceRaw, 
+      photos,
+      thumbnail,
       location: (params.get('city') && params.get('state')) 
         ? `${params.get('city')}, ${params.get('state')}` 
         : 'Location not available',
@@ -199,12 +284,23 @@ function showHotels(hotels) {
   hotelsWithINR.forEach(hotel => {
     const card = document.createElement('div');
     card.className = 'hotel-card';
+    
+    // Extract property token from serpapi_property_details_link
+    const propertyToken = hotel.property_token || 
+      (hotel.serpapi_property_details_link && 
+       hotel.serpapi_property_details_link.match(/property_token=([^&]+)/)?.[1]);
+    
+    if (propertyToken) {
+      card.dataset.propertyToken = propertyToken;
+    }
+    
     card.innerHTML = `
       <div class="hotel-card-content">
         <div class="hotel-image">
-          <img src="${hotel.thumbnail || hotel.photos?.[0] || 'https://placehold.co/200x150?text=Hotel'}" 
+          <img src="${hotel.thumbnail}" 
                alt="${hotel.name || 'Hotel image'}"
-               onerror="this.src='https://placehold.co/200x150?text=Hotel'">
+               onerror="this.src='https://placehold.co/200x150?text=Hotel'"
+               loading="lazy" />
         </div>
         <div class="hotel-info">
           <h3>${hotel.name || 'Unnamed Hotel'}</h3>
@@ -228,8 +324,9 @@ function showHotels(hotels) {
     `;
     console.log('Hotel image data:', {
         name: hotel.name,
-        thumbnail: hotel.thumbnail,
-        photos: hotel.photos
+        thumbnail: hotel.thumbnail ? hotel.thumbnail.substring(0, 50) + '...' : 'None',
+        photoCount: hotel.photos ? hotel.photos.length : 0,
+        isPlaceholder: hotel.thumbnail && hotel.thumbnail.includes('placehold.co')
     });
     
     hotelContainer.appendChild(card);
