@@ -393,11 +393,24 @@ body {
     gap: 15px;
 }
 
-.hotel-top-row {
+.hotel-name-container {
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.hotel-middle-row {
     display: flex;
     width: 100%;
     gap: 20px;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.hotel-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1;
 }
 
 .hotel-image {
@@ -433,8 +446,20 @@ body {
 .hotel-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.hotel-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
 }
 
 .hotel-info h3 {
@@ -830,9 +855,22 @@ input[type="text"][readonly].form-input {
 }
 
 .booking-actions {
-    margin-top: 16px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+}
+
+.booking-details {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+.confirm-booking {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
 }
 
 .hotel-booking-btn {
