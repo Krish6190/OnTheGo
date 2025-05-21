@@ -70,25 +70,29 @@ function showHotels(hotels) {
     const card = document.createElement('div');
     card.className = 'hotel-card';
     card.innerHTML = `
-      <div class="hotel-info">
-        <h3>${hotel.name || 'Unnamed Hotel'}</h3>
-        <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
-        <div class="hotel-price">${hotel.priceINR}</div>
-        ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
-        ${hotel.amenities?.length ? `
-          <div class="amenities">
-            ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
-          </div>` : ''}
-        <div class="booking-actions">
-          <a href="#" class="primary-cta hotel-booking-btn">
-            <span class="btn-text">Book Now</span>
-            <span class="btn-loading" style="display: none;">
-              <i class="fas fa-spinner fa-spin"></i> Processing...
-            </span>
-          </a>
+      <div class="hotel-card-content">
+        <div class="hotel-image">
+          <img src="${hotel.photos?.[0] || 'assets/images/hotel-placeholder.jpg'}" alt="${hotel.name}" onerror="this.src='assets/images/hotel-placeholder.jpg'">
+        </div>
+        <div class="hotel-info">
+          <h3>${hotel.name || 'Unnamed Hotel'}</h3>
+          <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
+          <div class="hotel-price">${hotel.priceINR}</div>
+          ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
+          ${hotel.amenities?.length ? `
+            <div class="amenities">
+              ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
+            </div>` : ''}
+          <div class="booking-actions">
+            <a href="#" class="primary-cta hotel-booking-btn">
+              <span class="btn-text">Book Now</span>
+              <span class="btn-loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Processing...
+              </span>
+            </a>
+          </div>
         </div>
       </div>
-      <br>
     `;
     hotelContainer.appendChild(card);
 
@@ -116,6 +120,7 @@ function showHotels(hotels) {
           location: hotel.location || 'Location not specified',
           checkin: hotel.checkin,
           checkout: hotel.checkout,
+          photos: hotel.photos || [],
           guests: '2 Guests',
           booking_time: new Date().toISOString(),
           search_params: {

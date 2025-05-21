@@ -25,6 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('hotelPrice').textContent = hotelData.priceINR;
   document.getElementById('hotelDescription').textContent = hotelData.description || 'No description available';
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
+
+  const hotelImageHTML = `
+    <div class="hotel-image-large">
+      <img src="${hotelData.photos?.[0] || 'assets/images/hotel-placeholder.jpg'}" 
+           alt="${hotelData.name}" 
+           onerror="this.src='assets/images/hotel-placeholder.jpg'">
+    </div>
+  `;
+  document.querySelector('.hotel-info-booking').insertAdjacentHTML('afterbegin', hotelImageHTML);
   
   const amenitiesList = document.getElementById('amenitiesList');
   if (hotelData.amenities && hotelData.amenities.length > 0) {
@@ -92,15 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tooltip) {
           tooltip = document.createElement('div');
           tooltip.id = 'custom-tooltip';
-          tooltip.style.position = 'fixed';  // Use fixed positioning for consistent viewport position
-          tooltip.style.backgroundColor = '#000000';  // Change to black for better visibility
+          tooltip.style.position = 'fixed';   
+          tooltip.style.backgroundColor = '#000000';  
           tooltip.style.color = 'white';
           tooltip.style.padding = '10px 14px';
           tooltip.style.borderRadius = '6px';
           tooltip.style.fontSize = '14px';
           tooltip.style.fontWeight = '400';
           tooltip.style.lineHeight = '1.5';
-          tooltip.style.zIndex = '10000';  // Increase z-index
+          tooltip.style.zIndex = '10000'; 
           tooltip.style.maxWidth = '280px';
           tooltip.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
           tooltip.style.border = '1px solid rgba(255,255,255,0.1)';
@@ -333,10 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function updateBookingSummary() {
     try {
-        // Calculate nights first
         const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
         
-        // Always show the nights if calculated
         if (nights > 0) {
             document.getElementById('summaryNights').textContent = nights;
         } else {
@@ -347,7 +354,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Get price - force numeric value
         let price = 0;
         if (hotelData.priceRaw) {
             price = parseFloat(hotelData.priceRaw);
@@ -357,8 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 price = parseFloat(matches.join(''));
             }
         }
-
-        // Calculate and show total only if we have valid numbers
         if (nights > 0 && price > 0) {
             const totalAmount = price * nights;
             document.getElementById('summaryTotal').textContent = 

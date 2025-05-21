@@ -386,6 +386,42 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.hotel-card-content {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.hotel-image {
+    width: 200px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.hotel-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hotel-image-large {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hotel-image-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .hotel-info {
   display: flex;
   flex-direction: column;
@@ -680,6 +716,20 @@ textarea.form-input {
     
     .hotel-details-card {
         padding: 16px;
+    }
+
+    .hotel-card-content {
+        flex-direction: column;
+    }
+    
+    .hotel-image {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 16px;
+    }
+    
+    .hotel-image-large {
+        height: 200px;
     }
 
     .booking-details {
