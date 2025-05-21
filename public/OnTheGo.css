@@ -602,7 +602,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding-bottom: 24px;
 }
 
 .hotel-text-content {
@@ -899,13 +898,10 @@ input[type="text"][readonly].form-input {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 24px;
+    align-items: start;
     margin-bottom: 24px;
     padding-bottom: 24px;
     border-bottom: 1px solid #eee;
-}
-
-.hotel-image-container {
-    width: 100%;
 }
 
 .hotel-booking-info {
@@ -945,18 +941,11 @@ input[type="text"][readonly].form-input {
     padding: 12px 24px;
 }
 
-.hotel-content-wrapper {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    align-items: start;
-    width: 100%;
-    margin-bottom: 24px;
-}
 
 @media (max-width: 768px) {
     .hotel-main-content {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .hotel-name-header {
@@ -968,14 +957,13 @@ input[type="text"][readonly].form-input {
     .hotel-booking-info {
         padding: 16px;
     }
+    
+    .hotel-image-large {
+        height: 300px;
+    }
 
     .hotel-text-content,
     .amenities-section {
         padding: 16px;
-    }
-    
-    .hotel-content-wrapper {
-        grid-template-columns: 1fr;
-        gap: 16px;
     }
 }
