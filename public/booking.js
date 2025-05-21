@@ -37,14 +37,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkInDateInput = document.getElementById('checkInDate');
   const checkOutDateInput = document.getElementById('checkOutDate');
   const guestsInput = document.getElementById('guests');
-  
-  checkInDateInput.value = hotelData.checkin || '';
-  checkOutDateInput.value = hotelData.checkout || '';
+
+  console.log('Check-in date:', hotelData.checkin);
+  console.log('Check-out date:', hotelData.checkout);
+  console.log('Hotel data:', hotelData);
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = dateStr.split('-');
+      return `${day}-${month}-${year}`;
+    }
+    return dateStr;
+  }
+
+  checkInDateInput.value = formatDate(hotelData.checkin) || '';
+  checkOutDateInput.value = formatDate(hotelData.checkout) || '';
   guestsInput.value = '2 Guests'; 
+
+  checkInDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
+  checkOutDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
+  guestsInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
+  
+  updateBookingSummary();
   
   [checkInDateInput, checkOutDateInput, guestsInput].forEach(input => {
     const tooltipText = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
-    input.title = tooltipText;
     
     const inputParent = input.parentElement;
     const inputWrapper = document.createElement('div');
@@ -74,15 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tooltip) {
           tooltip = document.createElement('div');
           tooltip.id = 'custom-tooltip';
-          tooltip.style.position = 'fixed';
-          tooltip.style.backgroundColor = '#000000';
+          tooltip.style.position = 'fixed';  // Use fixed positioning for consistent viewport position
+          tooltip.style.backgroundColor = '#000000';  // Change to black for better visibility
           tooltip.style.color = 'white';
           tooltip.style.padding = '10px 14px';
           tooltip.style.borderRadius = '6px';
           tooltip.style.fontSize = '14px';
           tooltip.style.fontWeight = '400';
           tooltip.style.lineHeight = '1.5';
-          tooltip.style.zIndex = '1000';
+          tooltip.style.zIndex = '10000';  // Increase z-index
           tooltip.style.maxWidth = '280px';
           tooltip.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
           tooltip.style.border = '1px solid rgba(255,255,255,0.1)';
@@ -93,17 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
           tooltip.style.wordBreak = 'break-word';
           document.body.appendChild(tooltip);
         }
-        tooltip.textContent = tooltipText;
+        tooltip.textContent = input.title;
         
         const rect = this.getBoundingClientRect();
-        const iconCenterX = rect.left + rect.width / 2 + window.scrollX;
-        
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
         tooltip.style.display = 'block';
         const tooltipWidth = tooltip.offsetWidth;
-        
-        tooltip.style.left = (iconCenterX - tooltipWidth / 2) + 'px';
-        
-        tooltip.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+
+        tooltip.style.position = 'fixed';
+        tooltip.style.left = (rect.left + (rect.width / 2) - (tooltipWidth / 2)) + 'px';
+        tooltip.style.top = (rect.bottom + 8) + 'px';
         
         tooltip.style.setProperty('--tooltip-arrow', '8px');
         tooltip.style.setProperty('--tooltip-color', '#2c3e50');
@@ -314,21 +333,55 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function updateBookingSummary() {
     try {
-      if (!checkInDateInput.value || !checkOutDateInput.value) {
-        document.getElementById('summaryNights').textContent = '0';
-        document.getElementById('summaryTotal').textContent = '₹0';
-        return;
-      }
+        // Calculate nights first
+        const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
+        
+        // Always show the nights if calculated
+        if (nights > 0) {
+            document.getElementById('summaryNights').textContent = nights;
+        } else {
+            document.getElementById('summaryNights').textContent = '--';
+            console.log('Invalid nights calculation:', {
+                checkIn: checkInDateInput.value,
+                checkOut: checkOutDateInput.value
+            });
+        }
 
-      const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
-      document.getElementById('summaryNights').textContent = nights;
-      const totalAmount = hotelData.priceRaw * nights;
-      document.getElementById('summaryTotal').textContent = 
-        '₹' + totalAmount.toLocaleString('en-IN');
+        // Get price - force numeric value
+        let price = 0;
+        if (hotelData.priceRaw) {
+            price = parseFloat(hotelData.priceRaw);
+        } else if (hotelData.priceINR) {
+            const matches = hotelData.priceINR.match(/\d+/g);
+            if (matches) {
+                price = parseFloat(matches.join(''));
+            }
+        }
+
+        // Calculate and show total only if we have valid numbers
+        if (nights > 0 && price > 0) {
+            const totalAmount = price * nights;
+            document.getElementById('summaryTotal').textContent = 
+                '₹' + totalAmount.toLocaleString('en-IN');
+            
+            console.log('Calculation successful:', {
+                nights: nights,
+                price: price,
+                total: totalAmount
+            });
+        } else {
+            document.getElementById('summaryTotal').textContent = '--';
+            console.log('Cannot calculate total:', {
+                validNights: nights > 0,
+                validPrice: price > 0,
+                nights: nights,
+                price: price
+            });
+        }
     } catch (error) {
-      console.error('Error updating booking summary:', error);
-      document.getElementById('summaryNights').textContent = '0';
-      document.getElementById('summaryTotal').textContent = '₹0';
+        console.error('Error in summary calculation:', error);
+        document.getElementById('summaryNights').textContent = '--';
+        document.getElementById('summaryTotal').textContent = '--';
     }
   }
 });
