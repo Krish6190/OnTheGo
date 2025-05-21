@@ -388,9 +388,16 @@ body {
 
 .hotel-card-content {
     display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+}
+
+.hotel-top-row {
+    display: flex;
     width: 100%;
     gap: 20px;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .hotel-image {
@@ -448,6 +455,7 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   width: fit-content;
+  margin-left: 10px;
 }
 
 .hotel-price {

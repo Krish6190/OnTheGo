@@ -224,15 +224,17 @@ function showHotels(hotels) {
     
     card.innerHTML = `
       <div class="hotel-card-content">
-        <div class="hotel-image">
-          <img src="${hotel.thumbnail}" 
-               alt="${hotel.name || 'Hotel image'}"
-               onerror="this.src='https://placehold.co/200x150?text=Hotel'"
-               loading="lazy" />
+        <div class="hotel-top-row">
+          <div class="hotel-image">
+            <img src="${hotel.thumbnail}" 
+                 alt="${hotel.name || 'Hotel image'}"
+                 onerror="this.src='https://placehold.co/200x150?text=Hotel'"
+                 loading="lazy" />
+          </div>
+          <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
         </div>
         <div class="hotel-info">
           <h3>${hotel.name || 'Unnamed Hotel'}</h3>
-          <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
           <div class="hotel-price">${hotel.priceINR}</div>
           ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
           ${hotel.amenities?.length ? `
