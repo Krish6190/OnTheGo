@@ -42,23 +42,95 @@ document.addEventListener('DOMContentLoaded', () => {
   checkOutDateInput.value = hotelData.checkout || '';
   guestsInput.value = '2 Guests'; 
   
-  // Add tooltips and visual indicators for readonly fields
   [checkInDateInput, checkOutDateInput, guestsInput].forEach(input => {
-    input.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
+    const tooltipText = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
+    input.title = tooltipText;
     
-    // Add a small info icon next to readonly fields
-    const inputWrapper = input.parentElement;
-    const infoIcon = document.createElement('span');
-    infoIcon.className = 'fas fa-info-circle readonly-indicator';
-    infoIcon.style.color = '#666';
-    infoIcon.style.marginLeft = '8px';
-    infoIcon.style.fontSize = '14px';
+    const inputParent = input.parentElement;
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'input-with-icon';
     inputWrapper.style.display = 'flex';
     inputWrapper.style.alignItems = 'center';
+    inputWrapper.style.position = 'relative';
+    input.parentNode.insertBefore(inputWrapper, input);
+    inputWrapper.appendChild(input);
+    
+    const infoIcon = document.createElement('i');
+    infoIcon.className = 'fas fa-info-circle info-tooltip';
+    infoIcon.style.marginLeft = '8px';
+    infoIcon.style.color = '#4a6da7';
+    infoIcon.style.cursor = 'pointer';
+    infoIcon.style.fontSize = '16px';
+    infoIcon.style.transition = 'color 0.2s ease';
+    infoIcon.addEventListener('mouseenter', () => infoIcon.style.color = '#2c5ae9');
+    infoIcon.addEventListener('mouseleave', () => infoIcon.style.color = '#4a6da7');
+    let tooltipTimeout;
+    
+    infoIcon.addEventListener('mouseover', function() {
+      if (tooltipTimeout) clearTimeout(tooltipTimeout);
+      
+      tooltipTimeout = setTimeout(() => {
+        let tooltip = document.getElementById('custom-tooltip');
+        if (!tooltip) {
+          tooltip = document.createElement('div');
+          tooltip.id = 'custom-tooltip';
+          tooltip.style.position = 'fixed';
+          tooltip.style.backgroundColor = '#000000';
+          tooltip.style.color = 'white';
+          tooltip.style.padding = '10px 14px';
+          tooltip.style.borderRadius = '6px';
+          tooltip.style.fontSize = '14px';
+          tooltip.style.fontWeight = '400';
+          tooltip.style.lineHeight = '1.5';
+          tooltip.style.zIndex = '1000';
+          tooltip.style.maxWidth = '280px';
+          tooltip.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+          tooltip.style.border = '1px solid rgba(255,255,255,0.1)';
+          tooltip.style.opacity = '0';
+          tooltip.style.transition = 'opacity 0.2s ease-in-out';
+          tooltip.style.pointerEvents = 'none';
+          tooltip.style.whiteSpace = 'normal';
+          tooltip.style.wordBreak = 'break-word';
+          document.body.appendChild(tooltip);
+        }
+        tooltip.textContent = tooltipText;
+        
+        const rect = this.getBoundingClientRect();
+        const iconCenterX = rect.left + rect.width / 2 + window.scrollX;
+        
+        tooltip.style.display = 'block';
+        const tooltipWidth = tooltip.offsetWidth;
+        
+        tooltip.style.left = (iconCenterX - tooltipWidth / 2) + 'px';
+        
+        tooltip.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+        
+        tooltip.style.setProperty('--tooltip-arrow', '8px');
+        tooltip.style.setProperty('--tooltip-color', '#2c3e50');
+        
+        setTimeout(() => {
+          tooltip.style.opacity = '1';
+        }, 10);
+      }, 150);
+    });
+    infoIcon.addEventListener('mouseout', function() {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+        tooltipTimeout = null;
+      }
+      
+      const tooltip = document.getElementById('custom-tooltip');
+      if (tooltip) {
+        tooltip.style.opacity = '0';
+        setTimeout(() => {
+          tooltip.style.display = 'none';
+        }, 200);
+      }
+    });
+    
     inputWrapper.appendChild(infoIcon);
   });
   
-  // Add a note about readonly fields
   const formNote = document.createElement('div');
   formNote.className = 'form-note';
   formNote.innerHTML = `
@@ -83,8 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isValid = true;
     let firstInvalidField = null;
     const errorMessages = [];
-
-    // Check each required field
     for (const [fieldId, fieldName] of Object.entries(requiredFields)) {
       const field = document.getElementById(fieldId);
       const isFieldValid = field.value.trim() !== '';
@@ -245,28 +315,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBookingSummary() {
     try {
       if (!checkInDateInput.value || !checkOutDateInput.value) {
-        document.getElementById('summaryNights').textContent = '--';
-        document.getElementById('summaryTotal').textContent = '--';
-        return;
-      }
-
-      const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
-      if (nights <= 0) {
         document.getElementById('summaryNights').textContent = '0';
         document.getElementById('summaryTotal').textContent = '₹0';
         return;
       }
 
-      const totalAmount = hotelData.priceRaw * nights;
-      
+      const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
       document.getElementById('summaryNights').textContent = nights;
-      document.getElementById('summaryTotal').textContent = totalAmount > 0 
-        ? '₹' + totalAmount.toLocaleString('en-IN')
-        : hotelData.priceINR + ' × ' + nights;
+      const totalAmount = hotelData.priceRaw * nights;
+      document.getElementById('summaryTotal').textContent = 
+        '₹' + totalAmount.toLocaleString('en-IN');
     } catch (error) {
       console.error('Error updating booking summary:', error);
-      document.getElementById('summaryNights').textContent = '--';
-      document.getElementById('summaryTotal').textContent = '--';
+      document.getElementById('summaryNights').textContent = '0';
+      document.getElementById('summaryTotal').textContent = '₹0';
     }
   }
 });
