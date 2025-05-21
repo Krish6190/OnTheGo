@@ -26,14 +26,29 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('hotelDescription').textContent = hotelData.description || 'No description available';
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
 
+  // Log hotel data for debugging
+  console.log('Hotel data for booking:', {
+      name: hotelData.name,
+      photos: hotelData.photos,
+      thumbnail: hotelData.thumbnail
+  });
+
+  const imageUrl = hotelData.photos?.[0] || hotelData.thumbnail || 'https://placehold.co/800x400?text=Hotel';
+
   const hotelImageHTML = `
-    <div class="hotel-image-large">
-      <img src="${hotelData.photos?.[0] || 'assets/images/hotel-placeholder.jpg'}" 
-           alt="${hotelData.name}" 
-           onerror="this.src='assets/images/hotel-placeholder.jpg'">
-    </div>
+      <div class="hotel-image-large">
+          <img src="${imageUrl}" 
+               alt="${hotelData.name}" 
+               onerror="this.src='https://placehold.co/800x400?text=Hotel'"
+               style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
   `;
   document.querySelector('.hotel-info-booking').insertAdjacentHTML('afterbegin', hotelImageHTML);
+
+  const img = document.querySelector('.hotel-image-large img');
+  img.addEventListener('error', function() {
+      this.src = 'https://placehold.co/800x400?text=Hotel';
+  });
   
   const amenitiesList = document.getElementById('amenitiesList');
   if (hotelData.amenities && hotelData.amenities.length > 0) {
@@ -46,10 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkInDateInput = document.getElementById('checkInDate');
   const checkOutDateInput = document.getElementById('checkOutDate');
   const guestsInput = document.getElementById('guests');
-
-  console.log('Check-in date:', hotelData.checkin);
-  console.log('Check-out date:', hotelData.checkout);
-  console.log('Hotel data:', hotelData);
 
   function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -258,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   Click OK to confirm your booking.`
     )) {
-      console.log('Booking Data:', bookingData);
+      
       alert('Booking confirmed!\n\nThank you for choosing ' + hotelData.name + '\nA confirmation email will be sent shortly.');
       sessionStorage.removeItem('hotelData');  
       window.location.href = '/';
@@ -319,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (!checkInDay || !checkInMonth || !checkInYear || 
           !checkOutDay || !checkOutMonth || !checkOutYear) {
-        console.error('Invalid date format');
         return 0;
       }
       
@@ -327,7 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay);
       
       if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
-        console.error('Invalid date objects');
         return 0;
       }
       
@@ -335,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
       return nights > 0 ? nights : 0;
     } catch (error) {
-      console.error('Error calculating nights:', error);
       return 0;
     }
   }
@@ -344,46 +352,28 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
         
-        if (nights > 0) {
-            document.getElementById('summaryNights').textContent = nights;
-        } else {
-            document.getElementById('summaryNights').textContent = '--';
-            console.log('Invalid nights calculation:', {
-                checkIn: checkInDateInput.value,
-                checkOut: checkOutDateInput.value
-            });
-        }
+        document.getElementById('summaryNights').textContent = nights || '--';
 
         let price = 0;
         if (hotelData.priceRaw) {
             price = parseFloat(hotelData.priceRaw);
         } else if (hotelData.priceINR) {
-            const matches = hotelData.priceINR.match(/\d+/g);
+            const priceStr = hotelData.priceINR.replace(/[₹,]/g, '');
+            const matches = priceStr.match(/\d+/);
             if (matches) {
-                price = parseFloat(matches.join(''));
+                price = parseFloat(matches[0]);
             }
         }
+
         if (nights > 0 && price > 0) {
             const totalAmount = price * nights;
             document.getElementById('summaryTotal').textContent = 
                 '₹' + totalAmount.toLocaleString('en-IN');
-            
-            console.log('Calculation successful:', {
-                nights: nights,
-                price: price,
-                total: totalAmount
-            });
         } else {
             document.getElementById('summaryTotal').textContent = '--';
-            console.log('Cannot calculate total:', {
-                validNights: nights > 0,
-                validPrice: price > 0,
-                nights: nights,
-                price: price
-            });
         }
     } catch (error) {
-        console.error('Error in summary calculation:', error);
+        console.error('Error updating summary:', error);
         document.getElementById('summaryNights').textContent = '--';
         document.getElementById('summaryTotal').textContent = '--';
     }

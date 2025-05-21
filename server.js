@@ -46,7 +46,43 @@ app.get('/api/hotels', async (req, res) => {
 
     const data = await response.json();
     const hotels = data.properties || data.hotels_results || [];
-    res.json(hotels);
+
+    console.log('Sample hotel data:', {
+        name: hotels[0]?.name,
+        thumbnail: hotels[0]?.thumbnail,
+        photos: hotels[0]?.photos,
+        main_photo: hotels[0]?.main_photo,
+        photo: hotels[0]?.photo
+    });
+
+    const processedHotels = hotels.map(hotel => {
+        const photoUrls = [];
+        
+        if (hotel.photos && Array.isArray(hotel.photos)) {
+            photoUrls.push(...hotel.photos);
+        }
+        if (hotel.thumbnail) {
+            photoUrls.push(hotel.thumbnail);
+        }
+        if (hotel.main_photo?.url) {
+            photoUrls.push(hotel.main_photo.url);
+        }
+        if (hotel.photo?.url) {
+            photoUrls.push(hotel.photo.url);
+        }
+        
+        console.log('Processed photo URLs for hotel:', {
+            name: hotel.name,
+            photoUrls: photoUrls
+        });
+
+        return {
+            ...hotel,
+            photos: photoUrls.length > 0 ? photoUrls : ['https://placehold.co/200x150?text=Hotel']
+        };
+    });
+
+    res.json(processedHotels);
 
   } catch (err) {
     console.error('API Error:', err.message);

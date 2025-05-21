@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const hotels = await response.json();
       showHotels(hotels);
     } catch (error) {
-      console.error('Fetch Error:', error);
       hotelContainer.innerHTML = `
         <div class="error">
           Error loading hotels: ${error.message}<br>
@@ -30,7 +29,7 @@ function showHotels(hotels) {
     return;
   }
 
-  const USD_TO_INR = 83; // Update this rate 
+  const USD_TO_INR = 83;
 
   const hotelsWithINR = hotels.map(hotel => {
     let priceUSD = hotel.rate_per_night?.lowest || hotel.price_per_night || hotel.price || '';
@@ -42,7 +41,6 @@ function showHotels(hotels) {
     if (priceUSD) {
       priceRaw = Math.round(Number(priceUSD) * USD_TO_INR);
       if (isNaN(priceRaw) || priceRaw <= 0) {
-        console.warn(`Invalid price for hotel: ${hotel.name}`);
         priceRaw = 0;
         priceINR = 'Price on request';
       } else {
@@ -59,7 +57,7 @@ function showHotels(hotels) {
       checkin: params.get('checkin'),
       checkout: params.get('checkout')
     };
-  }).filter(hotel => hotel.priceINR !== 'N/A'); // Filter out unavailabe hotels
+  }).filter(hotel => hotel.priceINR !== 'N/A');
 
   if (!hotelsWithINR.length) {
     hotelContainer.innerHTML = '<div class="error">No hotels with valid price found for your search criteria.</div>';
@@ -72,7 +70,9 @@ function showHotels(hotels) {
     card.innerHTML = `
       <div class="hotel-card-content">
         <div class="hotel-image">
-          <img src="${hotel.photos?.[0] || 'assets/images/hotel-placeholder.jpg'}" alt="${hotel.name}" onerror="this.src='assets/images/hotel-placeholder.jpg'">
+          <img src="${hotel.thumbnail || hotel.photos?.[0] || 'https://placehold.co/200x150?text=Hotel'}" 
+               alt="${hotel.name || 'Hotel image'}"
+               onerror="this.src='https://placehold.co/200x150?text=Hotel'">
         </div>
         <div class="hotel-info">
           <h3>${hotel.name || 'Unnamed Hotel'}</h3>
@@ -94,6 +94,12 @@ function showHotels(hotels) {
         </div>
       </div>
     `;
+    console.log('Hotel image data:', {
+        name: hotel.name,
+        thumbnail: hotel.thumbnail,
+        photos: hotel.photos
+    });
+    
     hotelContainer.appendChild(card);
 
     const bookNowBtn = card.querySelector('.hotel-booking-btn');
@@ -132,7 +138,6 @@ function showHotels(hotels) {
         sessionStorage.setItem('hotelData', JSON.stringify(hotelData));
         window.location.href = `/bookings?hotel=${encodeURIComponent(hotelData.name)}`;
       } catch (error) {
-        console.error('Error processing booking:', error);
 
         btnText.style.display = 'inline-block';
         btnLoading.style.display = 'none';
