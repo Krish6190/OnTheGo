@@ -71,14 +71,16 @@ function showHotels(hotels) {
           <div class="amenities">
             ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
           </div>` : ''}
-        <a href="/bookings?hotel=${encodeURIComponent(hotel.name || 'Unnamed Hotel')}" class="primary-cta hotel-booking-btn">Book Now</a>
+        <a href="#" class="primary-cta hotel-booking-btn">Book Now</a>
       </div>
       <br>
     `;
     hotelContainer.appendChild(card);
 
     const bookNowBtn = card.querySelector('.hotel-booking-btn');
-    bookNowBtn.addEventListener('click', () => {
+    bookNowBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
       const hotelData = {
         name: hotel.name || 'Unnamed Hotel',
         overall_rating: hotel.overall_rating || 'N/A',
@@ -90,7 +92,10 @@ function showHotels(hotels) {
         checkin: hotel.checkin,
         checkout: hotel.checkout
       };
+
       sessionStorage.setItem('hotelData', JSON.stringify(hotelData));
+
+      window.location.href = `/bookings?hotel=${encodeURIComponent(hotel.name || 'Unnamed Hotel')}`;
     });
   });
 }

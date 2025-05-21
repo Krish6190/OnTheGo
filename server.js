@@ -62,12 +62,21 @@ function convertDate(ddmmyyyy) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
-app.get(/^\/(?!api\/).*/, (req, res) => {
+
+app.get('/bookings', (req, res) => {
+  const hotel = req.query.hotel;
+  if (!hotel) {
+    return res.redirect('/');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'booking.html'));
+});
+
+app.get(/^\/(?!api\/|bookings).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Server Start
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
