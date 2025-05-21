@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let hotelData = JSON.parse(sessionStorage.getItem('hotelData'));
   if (!hotelData) {
-    console.warn('No hotel data found in sessionStorage. Using minimal data from URL.');
     hotelData = {
       name: decodeURIComponent(hotelName),
       overall_rating: 'N/A',
@@ -26,11 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('hotelDescription').textContent = hotelData.description || 'No description available';
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
 
-  console.log('Hotel data for booking:', {
-      name: hotelData.name,
-      photos: hotelData.photos,
-      thumbnail: hotelData.thumbnail
-  });
 
   const imageUrl = hotelData.photos?.[0] || hotelData.thumbnail || 'https://placehold.co/800x400?text=Hotel';
 
@@ -323,57 +317,47 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   function calculateNights(checkInDate, checkOutDate) {
-    try {
-      const [checkInDay, checkInMonth, checkInYear] = checkInDate.split('-').map(Number);
-      const [checkOutDay, checkOutMonth, checkOutYear] = checkOutDate.split('-').map(Number);
-      
-      if (!checkInDay || !checkInMonth || !checkInYear || 
-          !checkOutDay || !checkOutMonth || !checkOutYear) {
-        return 0;
-      }
-      
-      const checkIn = new Date(checkInYear, checkInMonth - 1, checkInDay);
-      const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay);
-      
-      if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
-        return 0;
-      }
-      
-      const timeDiff = checkOut.getTime() - checkIn.getTime();
-      const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      return nights > 0 ? nights : 0;
-    } catch (error) {
+    const [checkInDay, checkInMonth, checkInYear] = checkInDate.split('-').map(Number);
+    const [checkOutDay, checkOutMonth, checkOutYear] = checkOutDate.split('-').map(Number);
+    
+    if (!checkInDay || !checkInMonth || !checkInYear || 
+        !checkOutDay || !checkOutMonth || !checkOutYear) {
       return 0;
     }
+    
+    const checkIn = new Date(checkInYear, checkInMonth - 1, checkInDay);
+    const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay);
+    
+    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+      return 0;
+    }
+    
+    const timeDiff = checkOut.getTime() - checkIn.getTime();
+    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return nights > 0 ? nights : 0;
   }
   
   function updateBookingSummary() {
-    try {
-        const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
-        
-        document.getElementById('summaryNights').textContent = nights || '--';
+    const nights = calculateNights(checkInDateInput.value, checkOutDateInput.value);
+    
+    document.getElementById('summaryNights').textContent = nights || '--';
 
-        let price = 0;
-        if (hotelData.priceRaw) {
-            price = parseFloat(hotelData.priceRaw);
-        } else if (hotelData.priceINR) {
-            const priceStr = hotelData.priceINR.replace(/[₹,]/g, '');
-            const matches = priceStr.match(/\d+/);
-            if (matches) {
-                price = parseFloat(matches[0]);
-            }
+    let price = 0;
+    if (hotelData.priceRaw) {
+        price = parseFloat(hotelData.priceRaw);
+    } else if (hotelData.priceINR) {
+        const priceStr = hotelData.priceINR.replace(/[₹,]/g, '');
+        const matches = priceStr.match(/\d+/);
+        if (matches) {
+            price = parseFloat(matches[0]);
         }
+    }
 
-        if (nights > 0 && price > 0) {
-            const totalAmount = price * nights;
-            document.getElementById('summaryTotal').textContent = 
-                '₹' + totalAmount.toLocaleString('en-IN');
-        } else {
-            document.getElementById('summaryTotal').textContent = '--';
-        }
-    } catch (error) {
-        console.error('Error updating summary:', error);
-        document.getElementById('summaryNights').textContent = '--';
+    if (nights > 0 && price > 0) {
+        const totalAmount = price * nights;
+        document.getElementById('summaryTotal').textContent = 
+            '₹' + totalAmount.toLocaleString('en-IN');
+    } else {
         document.getElementById('summaryTotal').textContent = '--';
     }
   }

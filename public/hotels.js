@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      console.log('API response:', data);
       
       const hotels = (data.results || []).map(hotel => {
         if (typeof hotel === 'string') {
@@ -36,16 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
               hotelObj.photos = Array.isArray(hotelObj.photos) ? hotelObj.photos : [];
               hotelObj.thumbnail = hotelObj.thumbnail || '';
               
-              console.log('Successfully parsed hotel:', {
-                name: hotelObj.name,
-                photos: Array.isArray(hotelObj.photos) ? hotelObj.photos.length : 0,
-                thumbnail: hotelObj.thumbnail ? 'Yes' : 'No'
-              });
               
               return hotelObj;
             } catch (e) {
-              console.error('JSON parsing failed:', e);
-              console.log('Failed string sample:', cleanedStr.substring(0, 100) + '...');
               
               const fallbackHotel = {
                 name: hotelStr.match(/name=([^;]+)/)?.[1] || 'Unnamed Hotel',
@@ -58,11 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFailed: true
               };
               
-              console.log('Using fallback hotel data:', fallbackHotel);
               return fallbackHotel;
             }
           } catch (e) {
-            console.error('Error parsing hotel data:', e, hotel);
             return { 
               name: 'Hotel', 
               description: 'Details being fetched...',
@@ -73,8 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return hotel;
       }).filter(hotel => hotel && hotel.name);
       
-      console.log('Parsed hotels count:', hotels.length);
-      console.log('Sample hotel data:', hotels.length > 0 ? hotels[0] : 'No hotels found');
       showHotels(hotels);
     } catch (error) {
       hotelContainer.innerHTML = `
@@ -88,15 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchHotelDetails(propertyToken, hotelCard) {
   try {
-    console.log('Fetching details for property token:', propertyToken);
     const response = await fetch(`/api/hotels/details?property_token=${propertyToken}`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const data = await response.json();
-    console.log('Received hotel details:', {
-      hasImages: !!(data.images && data.images.length),
-      firstImage: data.images && data.images.length ? data.images[0] : 'None'
-    });
     
     if (data.images && data.images.length > 0) {
       const imgElement = hotelCard.querySelector('.hotel-image img');
@@ -104,12 +87,10 @@ async function fetchHotelDetails(propertyToken, hotelCard) {
       hotelCard.dataset.images = JSON.stringify(data.images);
     }
   } catch (error) {
-    console.error('Error fetching hotel details:', error);
   }
 }
 
 function showHotels(hotels) {
-  console.log('Starting showHotels with', hotels.length, 'hotels');
   hotels.forEach((hotel, index) => {
     const photoUrls = [];
     
@@ -150,15 +131,6 @@ function showHotels(hotels) {
     hotel.extractedPhotos = validUrls;
     hotel.extractedThumbnail = validUrls[0] || '';
     
-    console.log(`Hotel ${index + 1}:`, {
-      name: hotel.name,
-      hasDescription: !!hotel.description,
-      hasPhotos: Array.isArray(hotel.photos) && hotel.photos.length > 0,
-      hasThumbnail: !!hotel.thumbnail,
-      parseFailed: !!hotel.parseFailed,
-      extractedImageCount: validUrls.length,
-      firstImage: validUrls.length > 0 ? validUrls[0].substring(0, 50) + '...' : 'None'
-    });
   });
   
   hotelContainer.innerHTML = '';
@@ -169,7 +141,6 @@ function showHotels(hotels) {
   }
 
   const USD_TO_INR = 83;
-  console.log('Processing hotels for price conversion, count:', hotels.length);
 
   const hotelsWithINR = hotels.map(hotel => {
     let priceUSD = hotel.rate_per_night?.lowest || 
@@ -180,16 +151,6 @@ function showHotels(hotels) {
                  hotel.price_range?.from ||
                  '';
     
-    console.log('Hotel price data:', {
-      name: hotel.name,
-      price: priceUSD,
-      rate_per_night: hotel.rate_per_night,
-      price_per_night: hotel.price_per_night,
-      rawPrice: hotel.price,
-      rates: hotel.rates,
-      price_range: hotel.price_range,
-      deal: hotel.deal
-    });
     
     if (typeof priceUSD === 'string') {
       const priceMatch = priceUSD.match(/\d+(\.\d+)?/);
@@ -237,12 +198,6 @@ function showHotels(hotels) {
     };
   }).filter(hotel => hotel && hotel.name);
 
-  console.log('Hotels after processing:', {
-    total: hotelsWithINR.length,
-    withPrice: hotelsWithINR.filter(h => h.priceINR !== 'Price on request').length,
-    withPhotos: hotelsWithINR.filter(h => h.photos && h.photos.length > 0).length,
-    withAmenities: hotelsWithINR.filter(h => h.amenities && h.amenities.length > 0).length
-  });
 
   if (!hotelsWithINR.length) {
     hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
@@ -295,12 +250,6 @@ function showHotels(hotels) {
         </div>
       </div>
     `;
-    console.log('Hotel image data:', {
-        name: hotel.name,
-        thumbnail: hotel.thumbnail ? hotel.thumbnail.substring(0, 50) + '...' : 'None',
-        photoCount: hotel.photos ? hotel.photos.length : 0,
-        isPlaceholder: hotel.thumbnail && hotel.thumbnail.includes('placehold.co')
-    });
     
     hotelContainer.appendChild(card);
 
