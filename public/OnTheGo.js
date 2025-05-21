@@ -7,7 +7,6 @@ fetch('india-states-cities.json')
     states = data.states.sort((a, b) => a.localeCompare(b));
     stateCities = data.stateCities;
     
-    // Create combined locations array with format "City, State"
     states.forEach(state => {
       allLocations.push({ text: state, value: state, type: 'state' });
       const sortedCities = stateCities[state].sort((a, b) => a.localeCompare(b));
@@ -50,7 +49,6 @@ function clampDateToRange(dateStr, isCheckout = false, checkinDate = null) {
   tomorrow.setDate(tomorrow.getDate() + 1);
   
   if (isCheckout && checkinDate) {
-    //checkout is between checkin+1 and checkin+30
     const minCheckout = new Date(checkinDate);
     minCheckout.setDate(minCheckout.getDate() + 1);
     
@@ -64,7 +62,6 @@ function clampDateToRange(dateStr, isCheckout = false, checkinDate = null) {
       return formatDDMMYYYY(maxCheckout);
     }
   } else {
-    // checkin's range
     const maxDate = new Date((new Date().getFullYear() + 2), 11, 31);
     if (inputDate < tomorrow) return getTomorrowDDMMYYYY();
     if (inputDate > maxDate) return getMaxDDMMYYYY();
@@ -92,7 +89,6 @@ function setupDateAutoFormat(input, otherInput) {
       value = value.slice(0, 8);
     }
 
-    // Add leading zeros 
     if (value.length > 0) {
       let day = value.slice(0, 2);
       if (value.length > 2 && day.length === 1) {
@@ -113,7 +109,6 @@ function setupDateAutoFormat(input, otherInput) {
           month = '0' + month;
         } else if (month.length === 2) {
           if (monthNum > 12) {
-            // If first digit is valid (1-9), treat second digit as start of year
             if (month[0] <= '9' && month[0] >= '1') {
               yearPart = month[1] + yearPart;
               month = '0' + month[0];
@@ -130,7 +125,6 @@ function setupDateAutoFormat(input, otherInput) {
       }
     }
 
-    // Format with dashes
     if (value.length >= 4) {
       value = value.slice(0, 2) + '-' + value.slice(2, 4) + '-' + value.slice(4);
     } else if (value.length >= 2) {
@@ -211,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
     stateSelect.add(option);
   });
 
-  // City Dropdown Logic
   stateSelect.addEventListener('change', () => {
     citySelect.innerHTML = '<option value="">Select City</option>';
     citySelect.disabled = !stateSelect.value;
@@ -238,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('apply-btn').disabled = !allFilled;
   }
 
-  // Submit 
   document.getElementById('apply-btn').addEventListener('click', function() {
     const params = new URLSearchParams({
       checkin: checkinInput.value,

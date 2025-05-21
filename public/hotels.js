@@ -12,38 +12,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       console.log('API response:', data);
       
-      // Parse the stringified hotel objects
       const hotels = (data.results || []).map(hotel => {
         if (typeof hotel === 'string') {
           try {
-            // Remove '@' from the start if present and parse
             const hotelStr = hotel.startsWith('@{') ? hotel.substring(1) : hotel;
             
-            // Clean up the string to make it valid JSON
             const cleanedStr = hotelStr
-              .replace(/^@{/, '{')  // Remove leading @{ if present
-              .replace(/\\u0026/g, '&')  // Replace encoded ampersands
+              .replace(/^@{/, '{')
+              .replace(/\\u0026/g, '&')
               .replace(/(\w+)=([^;]+);?/g, (match, key, value) => {
-                // Handle array values marked as System.Object[]
                 if (value.trim() === 'System.Object[]') {
                   return `"${key}":[]`;
                 }
-                // Handle normal string values
                 return `"${key}":"${value.trim()}"`;
               })
-              .replace(/;\s*}/g, '}');  // Clean up trailing semicolons
+              .replace(/;\s*}/g, '}');
             
             try {
-              // Parse the cleaned string as JSON
               const hotelObj = JSON.parse(cleanedStr);
               
-              // Ensure required fields exist
               hotelObj.name = hotelObj.name || 'Unnamed Hotel';
               hotelObj.amenities = Array.isArray(hotelObj.amenities) ? hotelObj.amenities : [];
               hotelObj.photos = Array.isArray(hotelObj.photos) ? hotelObj.photos : [];
               hotelObj.thumbnail = hotelObj.thumbnail || '';
               
-              // Add debug logging
               console.log('Successfully parsed hotel:', {
                 name: hotelObj.name,
                 photos: Array.isArray(hotelObj.photos) ? hotelObj.photos.length : 0,
@@ -55,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
               console.error('JSON parsing failed:', e);
               console.log('Failed string sample:', cleanedStr.substring(0, 100) + '...');
               
-              // Return minimal valid hotel object with data extracted via regex
               const fallbackHotel = {
                 name: hotelStr.match(/name=([^;]+)/)?.[1] || 'Unnamed Hotel',
                 description: hotelStr.match(/description=([^;]+)/)?.[1] || '',
@@ -72,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           } catch (e) {
             console.error('Error parsing hotel data:', e, hotel);
-            // Return a minimal valid hotel object instead of null
             return { 
               name: 'Hotel', 
               description: 'Details being fetched...',
@@ -96,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-// Function to fetch detailed hotel information including images
 async function fetchHotelDetails(propertyToken, hotelCard) {
   try {
     console.log('Fetching details for property token:', propertyToken);
@@ -112,7 +101,6 @@ async function fetchHotelDetails(propertyToken, hotelCard) {
     if (data.images && data.images.length > 0) {
       const imgElement = hotelCard.querySelector('.hotel-image img');
       imgElement.src = data.images[0];
-      // Store other images for gallery if needed
       hotelCard.dataset.images = JSON.stringify(data.images);
     }
   } catch (error) {
@@ -123,10 +111,8 @@ async function fetchHotelDetails(propertyToken, hotelCard) {
 function showHotels(hotels) {
   console.log('Starting showHotels with', hotels.length, 'hotels');
   hotels.forEach((hotel, index) => {
-    // Extract image URLs from the initial hotel data
     const photoUrls = [];
     
-    // Extract images from the images array
     if (hotel.images && Array.isArray(hotel.images)) {
         hotel.images.forEach(img => {
             if (img.original_image) {
@@ -137,7 +123,6 @@ function showHotels(hotels) {
         });
     }
     
-    // Add other photo sources as fallback
     if (hotel.property_thumbnail) {
         photoUrls.push(hotel.property_thumbnail);
     }
@@ -154,7 +139,6 @@ function showHotels(hotels) {
         });
     }
     
-    // Filter out any proxy or placeholder URLs
     const validUrls = [...new Set(photoUrls.filter(url => 
         url && 
         typeof url === 'string' && 
@@ -163,7 +147,6 @@ function showHotels(hotels) {
         !url.includes('googleusercontent.com/proxy')
     ))];
 
-    // Add valid URLs to hotel object
     hotel.extractedPhotos = validUrls;
     hotel.extractedThumbnail = validUrls[0] || '';
     
@@ -189,7 +172,6 @@ function showHotels(hotels) {
   console.log('Processing hotels for price conversion, count:', hotels.length);
 
   const hotelsWithINR = hotels.map(hotel => {
-    // Update price extraction logic to handle more formats
     let priceUSD = hotel.rate_per_night?.lowest || 
                  hotel.price_per_night || 
                  hotel.price || 
@@ -209,19 +191,15 @@ function showHotels(hotels) {
       deal: hotel.deal
     });
     
-    // Handle different price string formats
     if (typeof priceUSD === 'string') {
-      // Extract first number sequence from the string
       const priceMatch = priceUSD.match(/\d+(\.\d+)?/);
       priceUSD = priceMatch ? priceMatch[0] : '';
     } else if (typeof priceUSD === 'object' && priceUSD !== null) {
-      // If it's an object, try to extract a numeric value
       priceUSD = Object.values(priceUSD).find(val => 
         typeof val === 'number' || (typeof val === 'string' && /\d/.test(val))
       ) || '';
     }
     
-    // More lenient price handling
     let priceINR = 'Price on request';
     let priceRaw = 0;
     if (priceUSD) {
@@ -231,18 +209,15 @@ function showHotels(hotels) {
       }
     }
     
-    // Add deal information if available
     if (hotel.deal) {
       priceINR += ` (${hotel.deal})`;
     }
-    // Use extracted photos or original photos or placeholder
     const photos = (hotel.extractedPhotos && hotel.extractedPhotos.length > 0) ? 
                    hotel.extractedPhotos : 
                    (Array.isArray(hotel.photos) && hotel.photos.length > 0) ? 
                    hotel.photos : 
                    ['https://placehold.co/200x150?text=Hotel'];
 
-    // Use extracted thumbnail or first photo or original thumbnail or placeholder
     const thumbnail = hotel.extractedThumbnail || 
                       (photos.length > 0 ? photos[0] : null) || 
                       hotel.thumbnail || 
@@ -260,7 +235,7 @@ function showHotels(hotels) {
       checkin: params.get('checkin'),
       checkout: params.get('checkout')
     };
-  }).filter(hotel => hotel && hotel.name); // Only filter out invalid hotels
+  }).filter(hotel => hotel && hotel.name);
 
   console.log('Hotels after processing:', {
     total: hotelsWithINR.length,
@@ -274,7 +249,6 @@ function showHotels(hotels) {
     return;
   }
 
-  // Sort hotels: those with prices first, then by rating
   hotelsWithINR.sort((a, b) => {
     if (a.priceINR !== 'Price on request' && b.priceINR === 'Price on request') return -1;
     if (a.priceINR === 'Price on request' && b.priceINR !== 'Price on request') return 1;
@@ -285,7 +259,6 @@ function showHotels(hotels) {
     const card = document.createElement('div');
     card.className = 'hotel-card';
     
-    // Extract property token from serpapi_property_details_link
     const propertyToken = hotel.property_token || 
       (hotel.serpapi_property_details_link && 
        hotel.serpapi_property_details_link.match(/property_token=([^&]+)/)?.[1]);

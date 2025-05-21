@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('hotelDescription').textContent = hotelData.description || 'No description available';
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
 
-  // Log hotel data for debugging
   console.log('Hotel data for booking:', {
       name: hotelData.name,
       photos: hotelData.photos,

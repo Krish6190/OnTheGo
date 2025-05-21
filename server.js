@@ -16,7 +16,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// API Endpoint for Hotels
 app.get('/api/hotels', async (req, res) => {
   try {
     if (!process.env.SERPAPI_KEY) {
@@ -37,7 +36,6 @@ app.get('/api/hotels', async (req, res) => {
       });
     }
 
-    //SerpAPI URL
     const apiUrl = new URL('https://serpapi.com/search');
     apiUrl.searchParams.set('engine', 'google_hotels');
     apiUrl.searchParams.set('api_key', process.env.SERPAPI_KEY);
@@ -46,16 +44,13 @@ app.get('/api/hotels', async (req, res) => {
     apiUrl.searchParams.set('check_out_date', convertDate(checkout));
     apiUrl.searchParams.set('adults', '2');
 
-    // Fetch from SerpAPI
     console.log('Fetching from SerpAPI:', apiUrl.toString().replace(/(api_key=)[^&]+/, '$1[REDACTED]'));
     const response = await fetch(apiUrl.toString());
     
-    // Handle different error status codes
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`SerpAPI Error: Status ${response.status}`, errorText);
       
-      // Provide more specific error messages based on status code
       if (response.status === 401) {
         throw new Error('SerpAPI Error: Unauthorized. Please check your API key.');
       } else if (response.status === 429) {
@@ -69,13 +64,11 @@ app.get('/api/hotels', async (req, res) => {
 
     const data = await response.json();
     
-    // Validate response data structure
     if (!data) {
       throw new Error('SerpAPI Error: Empty response received');
     }
     console.log('SerpAPI raw response structure:', Object.keys(data));
     
-    // Log search metadata if available
     if (data.search_metadata) {
         console.log('Search metadata:', {
             id: data.search_metadata.id,
@@ -87,35 +80,29 @@ app.get('/api/hotels', async (req, res) => {
         });
     }
     
-    // Log search parameters if available
     if (data.search_parameters) {
         console.log('Search parameters:', data.search_parameters);
     }
     
-    // Check for pagination info
     if (data.serpapi_pagination) {
         console.log('Pagination info:', data.serpapi_pagination);
     }
     
-    // Log detailed property paths for diagnostic purposes
     console.log('properties path exists:', !!data.properties);
     console.log('hotels_results path exists:', !!data.hotels_results);
     console.log('hotels path exists:', !!data.hotels);
     console.log('Property count is properties:', data.properties ? data.properties.length : 0);
     console.log('Property count if hotels_results:', data.hotels_results ? data.hotels_results.length : 0);
 
-    // Create a sanitized version of the response for logging (remove API key if present)
     const sanitizedData = JSON.parse(JSON.stringify(data));
     if (sanitizedData.search_metadata && sanitizedData.search_metadata.api_key) {
         sanitizedData.search_metadata.api_key = '[REDACTED]';
     }
     
-    // Log sanitized full response structure in development
     if (process.env.NODE_ENV !== 'production') {
         console.log('Full SerpAPI response (sanitized):', JSON.stringify(sanitizedData, null, 2));
     }
 
-    // Validate if we got a proper response with hotel data
     if (data.error) {
         console.error('SerpAPI returned an error:', data.error);
         return res.status(422).json({
@@ -128,7 +115,6 @@ app.get('/api/hotels', async (req, res) => {
     if (hotels.length === 0) {
         console.log('No hotels found in response. Available top-level keys:', Object.keys(data));
         
-        // Check if we have a valid response but no results
         if (data.search_metadata && data.search_metadata.status === "Success") {
             console.log('Search was successful but returned no hotels');
             return res.json({
@@ -141,7 +127,6 @@ app.get('/api/hotels', async (req, res) => {
     }
     
 
-    // Log complete data of first hotel
     if (hotels.length > 0) {
         console.log('Complete first hotel data:', JSON.stringify(hotels[0], null, 2));
         console.log('Hotel data types:', Object.keys(hotels[0]).map(key => ({ 
@@ -155,7 +140,6 @@ app.get('/api/hotels', async (req, res) => {
     const processedHotels = hotels.map(hotel => {
         const photoUrls = [];
 
-        // Log raw hotel data first
         console.log('Processing hotel data for:', hotel.name, {
             has_property_thumbnail: !!hotel.property_thumbnail,
             has_gallery_photos: !!(hotel.gallery_photos && hotel.gallery_photos.length),
@@ -168,12 +152,10 @@ app.get('/api/hotels', async (req, res) => {
             has_featured_image: !!hotel.featured_image
         });
 
-        // First, try to get the property's main image
         if (hotel.property_thumbnail) {
             photoUrls.push(hotel.property_thumbnail);
         }
 
-        // Then try to get the main gallery photo
         if (hotel.gallery_photos && Array.isArray(hotel.gallery_photos)) {
             hotel.gallery_photos.forEach(photo => {
                 if (photo.url) {
@@ -182,12 +164,10 @@ app.get('/api/hotels', async (req, res) => {
             });
         }
 
-        // Get the main photo URL if available
         if (hotel.main_photo_url) {
             photoUrls.push(hotel.main_photo_url);
         }
 
-        // Get room photos if available
         if (hotel.room_photos && Array.isArray(hotel.room_photos)) {
             hotel.room_photos.forEach(photo => {
                 if (photo.url) {
@@ -196,7 +176,6 @@ app.get('/api/hotels', async (req, res) => {
             });
         }
 
-        // Get any other photos
         if (hotel.photos && Array.isArray(hotel.photos)) {
             hotel.photos.forEach(photo => {
                 const url = photo.url || photo.link || (typeof photo === 'string' ? photo : null);
@@ -206,7 +185,6 @@ app.get('/api/hotels', async (req, res) => {
             });
         }
 
-        // Check standard thumbnail
         if (hotel.thumbnail) {
             const url = typeof hotel.thumbnail === 'string' ? 
                 hotel.thumbnail : (hotel.thumbnail.link || hotel.thumbnail.url);
@@ -215,7 +193,6 @@ app.get('/api/hotels', async (req, res) => {
             }
         }
 
-        // Check serpapi_hotel_thumbnails
         if (hotel.serpapi_hotel_thumbnails && Array.isArray(hotel.serpapi_hotel_thumbnails)) {
             hotel.serpapi_hotel_thumbnails.forEach(thumb => {
                 if (typeof thumb === 'string') {
@@ -226,7 +203,6 @@ app.get('/api/hotels', async (req, res) => {
             });
         }
 
-        // Check images array
         if (hotel.images && Array.isArray(hotel.images)) {
             hotel.images.forEach(img => {
                 if (typeof img === 'string') {
@@ -237,7 +213,6 @@ app.get('/api/hotels', async (req, res) => {
             });
         }
 
-        // Check featured_image
         if (hotel.featured_image) {
             if (typeof hotel.featured_image === 'string') {
                 photoUrls.push(hotel.featured_image);
@@ -246,10 +221,8 @@ app.get('/api/hotels', async (req, res) => {
             }
         }
 
-        // Log the found URLs for debugging
         console.log('Found photo URLs for', hotel.name, photoUrls);
 
-        // Filter out invalid URLs and remove duplicates
         const validUrls = [...new Set(photoUrls.filter(url => 
             url && 
             typeof url === 'string' && 
@@ -258,7 +231,6 @@ app.get('/api/hotels', async (req, res) => {
 
         console.log('Valid photo URLs for', hotel.name, ':', validUrls);
 
-        // Log if we're falling back to placeholder
         if (validUrls.length === 0) {
             console.log(`No valid image URLs found for hotel: ${hotel.name}, using placeholder instead`);
         }
@@ -270,7 +242,6 @@ app.get('/api/hotels', async (req, res) => {
         };
     });
 
-    // Log raw API response data for the first hotel
     if (hotels.length > 0) {
         console.log('Raw API data for first hotel:', {
             name: hotels[0].name,
@@ -286,12 +257,10 @@ app.get('/api/hotels', async (req, res) => {
         });
     }
     
-    // Log summary of processed results
     console.log(`Successfully processed ${processedHotels.length} hotels`);
     console.log(`Hotels with images: ${processedHotels.filter(h => h.photos[0] !== 'https://placehold.co/200x150?text=Hotel').length}`);
     console.log(`Hotels without images (using placeholder): ${processedHotels.filter(h => h.photos[0] === 'https://placehold.co/200x150?text=Hotel').length}`);
 
-    // Add timestamp to the response for caching purposes
     const apiResponse = {
         timestamp: new Date().toISOString(),
         results: processedHotels,
@@ -304,7 +273,6 @@ app.get('/api/hotels', async (req, res) => {
     console.error('API Error:', err.message);
     console.error('Error stack:', err.stack);
     
-    // Determine appropriate status code based on error message
     let statusCode = 500;
     if (err.message.includes('Unauthorized')) {
       statusCode = 401;
@@ -322,7 +290,6 @@ app.get('/api/hotels', async (req, res) => {
   }
 });
 
-// API Endpoint for Hotel Details
 app.get('/api/hotels/details', async (req, res) => {
   try {
     const propertyToken = req.query.property_token;
@@ -349,7 +316,6 @@ app.get('/api/hotels/details', async (req, res) => {
     
     const data = await response.json();
     
-    // Extract images from response
     const images = [];
     if (data.gallery_images && Array.isArray(data.gallery_images)) {
       data.gallery_images.forEach(img => {
@@ -359,12 +325,10 @@ app.get('/api/hotels/details', async (req, res) => {
       });
     }
     
-    // Also check if there's a main image
     if (data.main_image) {
       images.unshift(data.main_image);
     }
 
-    // Send back just what we need
     res.json({
       images,
       name: data.name,
@@ -384,7 +348,6 @@ function convertDate(ddmmyyyy) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/bookings', (req, res) => {
