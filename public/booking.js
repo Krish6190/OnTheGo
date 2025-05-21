@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
       this.src = 'https://placehold.co/800x400?text=Hotel';
   });
   
-  // Add click handler for the quick book button
   document.querySelector('.quick-book-btn').addEventListener('click', function() {
       document.getElementById('bookNowBtn').scrollIntoView({ behavior: 'smooth' });
   });
