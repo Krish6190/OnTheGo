@@ -257,15 +257,6 @@ function showHotels(hotels) {
               ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
             </div>` : ''}
         </div>
-        
-        <div class="hotel-details-container">
-          <div class="booking-details">
-            Booking Details: ${hotel.checkin || 'Check-in'} to ${hotel.checkout || 'Check-out'}
-          </div>
-          <div class="confirm-booking">
-            <button class="secondary-cta">Confirm Booking</button>
-          </div>
-        </div>
       </div>
     `;
     
