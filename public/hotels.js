@@ -229,6 +229,9 @@ function showHotels(hotels) {
                alt="${hotel.name || 'Hotel image'}"
                onerror="this.src='https://placehold.co/220x165?text=Hotel'"
                loading="lazy" />
+          <div class="hotel-loading-overlay" style="display:none;">
+            <div class="loading-spinner"></div>
+          </div>
         </div>
         
         <div class="hotel-content-right">
@@ -254,9 +257,11 @@ function showHotels(hotels) {
 
     // Make the entire card clickable
     card.addEventListener('click', async (e) => {
-      // Show loading state on the card
-      card.style.opacity = '0.7';
-      card.style.pointerEvents = 'none';
+      // Show loading indicator instead of changing card opacity
+      const loadingOverlay = card.querySelector('.hotel-loading-overlay');
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+      }
       
       try {
         if (!hotel.checkin || !hotel.checkout) {
@@ -285,10 +290,11 @@ function showHotels(hotels) {
         sessionStorage.setItem('hotelData', JSON.stringify(hotelData));
         window.location.href = `/bookings?hotel=${encodeURIComponent(hotelData.name)}`;
       } catch (error) {
-
-        // Restore card to normal state
-        card.style.opacity = '1';
-        card.style.pointerEvents = 'auto';
+        // Hide loading indicator
+        const loadingOverlay = card.querySelector('.hotel-loading-overlay');
+        if (loadingOverlay) {
+          loadingOverlay.style.display = 'none';
+        }
         
         if (error.message === 'Invalid booking dates') {
           alert('Invalid booking dates. Please return to search and select valid dates.');

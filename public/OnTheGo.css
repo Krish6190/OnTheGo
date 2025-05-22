@@ -384,8 +384,28 @@ body {
 .hotel-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  cursor: pointer; /* Indicate clickable */
-  border-color: var(--primary-blue); /* Highlight border on hover */
+  cursor: pointer;
+  border-color: var(--primary-blue); 
+}
+
+.hotel-card {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.hotel-card:visited,
+.hotel-card a:visited,
+.hotel-card h3:visited {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
+.hotel-card:hover,
+.hotel-card:visited:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  border-color: var(--primary-blue);
 }
 
 .hotel-card-content {
@@ -415,7 +435,7 @@ body {
     flex-direction: column;
     gap: 12px;
     flex: 1;
-    min-height: 150px; /* Match image height */
+    min-height: 150px; 
 }
 
 .hotel-details {
@@ -425,11 +445,12 @@ body {
 }
 
 .hotel-image {
-    width: 220px; /* Increased by 10% from 200px */
-    height: 165px; /* Increased by 10% from 150px */
+    width: 220px;
+    height: 165px;
     overflow: hidden;
     border-radius: 8px;
     flex-shrink: 0;
+    position: relative;
 }
 
 .hotel-image img {
@@ -440,12 +461,12 @@ body {
 
 .hotel-image-large {
     width: 100%;
-    height: 400px;  /* Slightly reduced height */
+    height: 400px;  
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    order: 2; /* Move to right side */
+    order: 2; 
 }
 
 .hotel-image-large img {
@@ -1159,4 +1180,27 @@ input[type="text"][readonly].form-input {
     .amenities-section {
         padding: 16px;
     }
+}
+
+.hotel-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(26, 182, 79, 0.2);
+  border-top: 4px solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
