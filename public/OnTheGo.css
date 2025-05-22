@@ -388,9 +388,10 @@ body {
 
 .hotel-card-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
-    gap: 15px;
+    gap: 20px;
+    align-items: flex-start;
 }
 
 .hotel-name-container {
@@ -407,13 +408,18 @@ body {
     margin-bottom: 5px;
 }
 
-.hotel-right-column {
+.hotel-content-right {
     display: flex;
     flex-direction: column;
     gap: 12px;
     flex: 1;
-    justify-content: space-between;
     min-height: 150px; /* Match image height */
+}
+
+.hotel-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .hotel-image {
@@ -587,6 +593,17 @@ body {
   
   .hotel-card {
     padding: 16px;
+  }
+  
+  .hotel-card-content {
+    flex-direction: column;
+  }
+  
+  .hotel-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    margin-bottom: 15px;
   }
   
   .hotel-info h3 {

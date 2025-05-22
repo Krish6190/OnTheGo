@@ -224,38 +224,38 @@ function showHotels(hotels) {
     
     card.innerHTML = `
       <div class="hotel-card-content">
-        <div class="hotel-name-container">
-          <h3>${hotel.name || 'Unnamed Hotel'}</h3>
+        <div class="hotel-image">
+          <img src="${hotel.thumbnail}" 
+               alt="${hotel.name || 'Hotel image'}"
+               onerror="this.src='https://placehold.co/200x150?text=Hotel'"
+               loading="lazy" />
         </div>
         
-        <div class="hotel-middle-row">
-          <div class="hotel-image">
-            <img src="${hotel.thumbnail}" 
-                 alt="${hotel.name || 'Hotel image'}"
-                 onerror="this.src='https://placehold.co/200x150?text=Hotel'"
-                 loading="lazy" />
+        <div class="hotel-content-right">
+          <div class="hotel-name-container">
+            <h3>${hotel.name || 'Unnamed Hotel'}</h3>
           </div>
           
-          <div class="hotel-right-column">
+          <div class="hotel-details">
             <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
             <div class="hotel-price">${hotel.priceINR}</div>
-            <div class="booking-actions">
-              <a href="#" class="primary-cta hotel-booking-btn">
-                <span class="btn-text">Book Now</span>
-                <span class="btn-loading" style="display: none;">
-                  <i class="fas fa-spinner fa-spin"></i> Processing...
-                </span>
-              </a>
-            </div>
+            
+            ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
+            
+            ${hotel.amenities?.length ? `
+              <div class="amenities">
+                ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
+              </div>` : ''}
           </div>
-        </div>
-        
-        <div class="hotel-info">
-          ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
-          ${hotel.amenities?.length ? `
-            <div class="amenities">
-              ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
-            </div>` : ''}
+          
+          <div class="booking-actions">
+            <a href="#" class="primary-cta hotel-booking-btn">
+              <span class="btn-text">Book Now</span>
+              <span class="btn-loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Processing...
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     `;
