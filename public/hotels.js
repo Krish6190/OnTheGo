@@ -255,9 +255,7 @@ function showHotels(hotels) {
     
     hotelContainer.appendChild(card);
 
-    // Make the entire card clickable
     card.addEventListener('click', async (e) => {
-      // Show loading indicator instead of changing card opacity
       const loadingOverlay = card.querySelector('.hotel-loading-overlay');
       if (loadingOverlay) {
         loadingOverlay.style.display = 'flex';
@@ -290,7 +288,6 @@ function showHotels(hotels) {
         sessionStorage.setItem('hotelData', JSON.stringify(hotelData));
         window.location.href = `/bookings?hotel=${encodeURIComponent(hotelData.name)}`;
       } catch (error) {
-        // Hide loading indicator
         const loadingOverlay = card.querySelector('.hotel-loading-overlay');
         if (loadingOverlay) {
           loadingOverlay.style.display = 'none';
