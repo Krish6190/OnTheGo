@@ -689,6 +689,7 @@ body {
     margin-bottom: 40px;
     align-items: flex-start;
     width: 100%;
+    flex-direction: column-reverse;
 }
 
 .hotel-image-large {
