@@ -445,8 +445,8 @@ body {
 }
 
 .hotel-image {
-    width: 220px;
-    height: 165px;
+    width: 260px;
+    height: 195px;
     overflow: hidden;
     border-radius: 8px;
     flex-shrink: 0;
