@@ -24,29 +24,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const imageUrl = hotelData.photos?.[0] || hotelData.thumbnail || 'https://placehold.co/800x400?text=Hotel';
 
-  const hotelHeaderHTML = `
-      <h2 id="hotelName" class="hotel-name-header">${hotelData.name}</h2>
-  `;
-
-  const hotelImageHTML = `
-      <div class="hotel-image-large">
-          <img src="${imageUrl}" 
-               alt="${hotelData.name}" 
-               onerror="this.src='https://placehold.co/800x400?text=Hotel'"
-               style="width: 100%; height: 100%; object-fit: cover;">
+  const imageAndRatingHTML = `
+      <div class="image-rating-row">
+          <div class="hotel-image-large">
+              <img src="${imageUrl}" 
+                   alt="${hotelData.name}" 
+                   onerror="this.src='https://placehold.co/800x400?text=Hotel'"
+                   style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div class="hotel-rating-container">
+              <div class="hotel-rating" id="hotelRating">★ ${hotelData.overall_rating}</div>
+              <div class="hotel-price" id="hotelPrice">${hotelData.priceINR}</div>
+              <button class="primary-cta quick-book-btn">Scroll to Booking</button>
+          </div>
       </div>
+      <div class="section-divider"></div>
   `;
   
-  const hotelBookingInfoHTML = `
-      <div class="hotel-booking-info">
-          <div class="hotel-rating" id="hotelRating">★ ${hotelData.overall_rating}</div>
-          <div class="hotel-price" id="hotelPrice">${hotelData.priceINR}</div>
-          <button class="primary-cta quick-book-btn">Book Now</button>
-      </div>
-  `;
-  
-  const hotelDetailsHTML = `
-      <div class="hotel-text-content">
+  const descriptionAmenitiesHTML = `
+      <div class="description-amenities-section">
           <div id="hotelDescription" class="description-full">${hotelData.description || 'No description available'}</div>
           <div class="amenities-container">
               <h3>Amenities</h3>
@@ -57,10 +53,23 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
           </div>
       </div>
+      <div class="section-divider"></div>
   `;
   
+  const informationHTML = `
+      <div class="hotel-information-section">
+          <h3>Location Information</h3>
+          <p>${hotelData.location || 'Location information not available'}</p>
+          ${hotelData.checkin && hotelData.checkout ? 
+            `<p><strong>Stay Dates:</strong> ${hotelData.checkin} to ${hotelData.checkout}</p>` : ''}
+      </div>
+      <div class="section-divider"></div>
+  `;
+  
+  document.getElementById('hotelName').innerHTML = hotelData.name;
+  
   document.querySelector('.hotel-info-booking').innerHTML = 
-      hotelHeaderHTML + hotelImageHTML + hotelBookingInfoHTML + hotelDetailsHTML;
+      imageAndRatingHTML + descriptionAmenitiesHTML + informationHTML;
   const img = document.querySelector('.hotel-image-large img');
   img.addEventListener('error', function() {
       this.src = 'https://placehold.co/800x400?text=Hotel';

@@ -653,6 +653,85 @@ body {
     gap: 24px;
 }
 
+.hotel-name-header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    text-align: center;
+    width: 100%;
+}
+
+.image-rating-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.hotel-image-large {
+    flex: 3;
+    height: 350px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hotel-rating-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #eaedf0;
+    height: fit-content;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.description-amenities-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #eaedf0;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
+}
+
+.hotel-information-section {
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #eaedf0;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
+}
+
+.hotel-information-section h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.section-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #eee;
+    margin: 20px 0;
+}
+
 .hotel-text-content {
     display: flex;
     flex-direction: column;
@@ -686,14 +765,22 @@ body {
 .booking-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 30px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #eaedf0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
 }
 
 .booking-form h3 {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 8px;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
 }
 
 .form-row {
@@ -1021,6 +1108,36 @@ input[type="text"][readonly].form-input {
         font-size: 1.5rem;
         margin-bottom: 16px;
         padding-bottom: 12px;
+    }
+    
+    .image-rating-row {
+        flex-direction: column;
+    }
+    
+    .hotel-image-large {
+        width: 100%;
+        height: 250px;
+        margin-bottom: 20px;
+    }
+    
+    .hotel-rating-container {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .description-amenities-section,
+    .hotel-information-section {
+        padding: 20px;
+    }
+    
+    .booking-form {
+        padding: 20px;
+    }
+    
+    .hotel-name-header {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
     }
 
     .hotel-booking-info {

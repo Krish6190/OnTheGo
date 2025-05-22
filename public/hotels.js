@@ -239,7 +239,7 @@ function showHotels(hotels) {
           <div class="hotel-details">
             <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
             <div class="hotel-price">${hotel.priceINR}</div>
-            <p class="description">★ ${hotel.description || 'No description for this Hotel'}</div>
+            <p class="description">${hotel.description || 'No description for this Hotel'}</div>
             
             ${hotel.amenities?.length ? `
               <div class="amenities">
