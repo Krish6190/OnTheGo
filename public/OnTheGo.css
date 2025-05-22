@@ -670,7 +670,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    color:aqua;
+    background-color: antiquewhite;
 }
 
 .hotel-name-header {
