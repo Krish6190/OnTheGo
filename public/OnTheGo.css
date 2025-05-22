@@ -384,6 +384,8 @@ body {
 .hotel-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer; /* Indicate clickable */
+  border-color: var(--primary-blue); /* Highlight border on hover */
 }
 
 .hotel-card-content {
@@ -423,8 +425,8 @@ body {
 }
 
 .hotel-image {
-    width: 200px;
-    height: 150px;
+    width: 220px; /* Increased by 10% from 200px */
+    height: 165px; /* Increased by 10% from 150px */
     overflow: hidden;
     border-radius: 8px;
     flex-shrink: 0;
@@ -602,7 +604,7 @@ body {
   .hotel-image {
     width: 100%;
     height: auto;
-    max-height: 200px;
+    max-height: 220px; /* Increased by 10% from 200px */
     margin-bottom: 15px;
   }
   

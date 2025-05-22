@@ -227,7 +227,7 @@ function showHotels(hotels) {
         <div class="hotel-image">
           <img src="${hotel.thumbnail}" 
                alt="${hotel.name || 'Hotel image'}"
-               onerror="this.src='https://placehold.co/200x150?text=Hotel'"
+               onerror="this.src='https://placehold.co/220x165?text=Hotel'"
                loading="lazy" />
         </div>
         
@@ -239,22 +239,12 @@ function showHotels(hotels) {
           <div class="hotel-details">
             <div class="hotel-rating">★ ${hotel.overall_rating || 'N/A'}</div>
             <div class="hotel-price">${hotel.priceINR}</div>
-            
-            ${hotel.description ? `<p class="description">${hotel.description}</p>` : ''}
+            <p class="description">★ ${hotel.description || 'No description for this Hotel'}</div>
             
             ${hotel.amenities?.length ? `
               <div class="amenities">
                 ${hotel.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}
               </div>` : ''}
-          </div>
-          
-          <div class="booking-actions">
-            <a href="#" class="primary-cta hotel-booking-btn">
-              <span class="btn-text">Book Now</span>
-              <span class="btn-loading" style="display: none;">
-                <i class="fas fa-spinner fa-spin"></i> Processing...
-              </span>
-            </a>
           </div>
         </div>
       </div>
@@ -262,14 +252,11 @@ function showHotels(hotels) {
     
     hotelContainer.appendChild(card);
 
-    const bookNowBtn = card.querySelector('.hotel-booking-btn');
-    bookNowBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const btnText = bookNowBtn.querySelector('.btn-text');
-      const btnLoading = bookNowBtn.querySelector('.btn-loading');
-      btnText.style.display = 'none';
-      btnLoading.style.display = 'inline-block';
-      bookNowBtn.disabled = true;
+    // Make the entire card clickable
+    card.addEventListener('click', async (e) => {
+      // Show loading state on the card
+      card.style.opacity = '0.7';
+      card.style.pointerEvents = 'none';
       
       try {
         if (!hotel.checkin || !hotel.checkout) {
@@ -299,9 +286,9 @@ function showHotels(hotels) {
         window.location.href = `/bookings?hotel=${encodeURIComponent(hotelData.name)}`;
       } catch (error) {
 
-        btnText.style.display = 'inline-block';
-        btnLoading.style.display = 'none';
-        bookNowBtn.disabled = false;
+        // Restore card to normal state
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
         
         if (error.message === 'Invalid booking dates') {
           alert('Invalid booking dates. Please return to search and select valid dates.');
