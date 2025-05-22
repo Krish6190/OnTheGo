@@ -484,8 +484,6 @@ body {
   border-top: 1px solid #f0f0f0;
 }
 
-/* Hotel details container removed - content moved to hotel-info */
-
 .hotel-info h3 {
   font-size: 1.25rem;
   font-weight: 600;
@@ -672,6 +670,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    color: antiquewhite;
 }
 
 .hotel-name-header {
