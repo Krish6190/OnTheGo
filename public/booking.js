@@ -211,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
       'email': 'Email',
       'phone': 'Phone Number'
     };
-
     let isValid = true;
     let firstInvalidField = null;
     const errorMessages = [];
@@ -290,10 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   Click OK to confirm your booking.`
     )) {
-      
       alert('Booking confirmed!\n\nThank you for choosing ' + hotelData.name + '\nA confirmation email will be sent shortly.');
-      sessionStorage.removeItem('hotelData');  
+      
+
       window.location.href = '/';
+      sessionStorage.removeItem('hotelData');
     }
   });
 
@@ -388,5 +388,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         document.getElementById('summaryTotal').textContent = '--';
     }
-  }
-});
+  }   
+});   
