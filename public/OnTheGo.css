@@ -460,8 +460,8 @@ body {
 }
 
 .hotel-image-large {
-    width: 100%;
-    height: 400px;  
+    width: 400px;
+    height: 100px;  
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 0;
@@ -684,23 +684,25 @@ body {
 }
 
 .image-rating-row {
+    height: 300px;
     display: flex;
+    flex-direction: row-reverse;
     gap: 30px;
     margin-bottom: 40px;
-    align-items: flex-start;
+    justify-content:center;
     width: 100%;
 }
 
 .hotel-image-large {
-    flex: 1;
-    height: 350px;
+    height: 300px;
+    width: 400px;
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    justify-content:start;
 }
 
 .hotel-rating-container {
-    flex: 3;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -709,6 +711,7 @@ body {
     border-radius: 10px;
     border: 1px solid #eaedf0;
     height: fit-content;
+    width: 34%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -1140,7 +1143,6 @@ input[type="text"][readonly].form-input {
     }
     
     .hotel-rating-container {
-        width: 100%;
         padding: 20px;
     }
     

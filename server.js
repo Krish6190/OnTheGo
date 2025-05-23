@@ -9,29 +9,42 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors({
-  origin: 'https://onthego-jiti.onrender.com',
+  origin: process.env.ALLOWED_ORIGINS || '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: false
 }));
 
 app.use(express.json());
 
+function createApiResponse(success, data, message = null) {
+  return {
+    success: success,
+    timestamp: new Date().toISOString(),
+    message: message,
+    data: data
+  };
+}
+
 app.get('/api/hotels', async (req, res) => {
   try {
     if (!process.env.SERPAPI_KEY) {
       console.error('SERPAPI_KEY is not set in environment variables');
-      return res.status(500).json({
-          error: 'Server configuration error',
-          message: 'API key is not configured'
-      });
+      return res.status(500).json(createApiResponse(
+        false,
+        null,
+        'Server configuration error: API key is not configured'
+      ));
     }
 
     const { checkin, checkout, city, state } = req.query;
     if (!checkin || !checkout || !city || !state) {
-      return res.status(400).json({
-        error: 'Missing parameters',
-        required: ['checkin (DD-MM-YYYY)', 'checkout (DD-MM-YYYY)', 'city', 'state']
-      });
+      return res.status(400).json(createApiResponse(
+        false,
+        { 
+          required: ['checkin (DD-MM-YYYY)', 'checkout (DD-MM-YYYY)', 'city', 'state']
+        },
+        'Missing parameters'
+      ));
     }
 
     const apiUrl = new URL('https://serpapi.com/search');
@@ -71,22 +84,24 @@ app.get('/api/hotels', async (req, res) => {
 
     if (data.error) {
         console.error('SerpAPI returned an error:', data.error);
-        return res.status(422).json({
-            error: 'Error in search results',
-            details: data.error
-        });
+        return res.status(422).json(createApiResponse(
+          false,
+          { details: data.error },
+          'Error in search results'
+        ));
     }
 
     const hotels = data.properties || data.hotels_results || data.hotels || [];
     if (hotels.length === 0) {
         if (data.search_metadata && data.search_metadata.status === "Success") {
-            return res.json({
-                message: 'No hotels found for your search criteria',
-                results: []
-            });
+            return res.json(createApiResponse(
+              true,
+              { results: [] },
+              'No hotels found for your search criteria'
+            ));
         }
         
-        return res.json([]);
+        return res.json(createApiResponse(true, { results: [] }));
     }
     
 
@@ -176,15 +191,15 @@ app.get('/api/hotels', async (req, res) => {
             thumbnail: validUrls[0] || 'https://placehold.co/200x150?text=Hotel'
         };
     });
-
-
-    const apiResponse = {
-        timestamp: new Date().toISOString(),
+    res.json(createApiResponse(
+      true, 
+      {
         results: processedHotels,
-        total: processedHotels.length
-    };
-
-    res.json(apiResponse);
+        total: processedHotels.length,
+        query: { city, state, checkin, checkout } 
+      },
+      'Hotel search results'
+    ));
 
   } catch (err) {
     console.error('API Error:', err.message);
@@ -199,11 +214,11 @@ app.get('/api/hotels', async (req, res) => {
       statusCode = 400;
     }
     
-    res.status(statusCode).json({
-      error: 'Failed to fetch hotels',
-      details: err.message,
-      timestamp: new Date().toISOString()
-    });
+    res.status(statusCode).json(createApiResponse(
+      false,
+      { error: err.message },
+      'Failed to fetch hotels'
+    ));
   }
 });
 
@@ -211,15 +226,20 @@ app.get('/api/hotels/details', async (req, res) => {
   try {
     const propertyToken = req.query.property_token;
     if (!propertyToken) {
-      return res.status(400).json({ error: 'Property token is required' });
+      return res.status(400).json(createApiResponse(
+        false,
+        null,
+        'Property token is required'
+      ));
     }
 
     if (!process.env.SERPAPI_KEY) {
       console.error('SERPAPI_KEY is not set in environment variables');
-      return res.status(500).json({
-        error: 'Server configuration error',
-        message: 'API key is not configured'
-      });
+      return res.status(500).json(createApiResponse(
+        false,
+        null,
+        'Server configuration error: API key is not configured'
+      ));
     }
 
     const response = await fetch(
@@ -245,17 +265,21 @@ app.get('/api/hotels/details', async (req, res) => {
       images.unshift(data.main_image);
     }
 
-    res.json({
-      images,
-      name: data.name,
-      description: data.description
-    });
+    res.json(createApiResponse(
+      true,
+      {
+        images,
+        name: data.name,
+        description: data.description
+      }
+    ));
   } catch (error) {
     console.error('API Error (hotel details):', error.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch hotel details',
-      details: error.message
-    });
+    res.status(500).json(createApiResponse(
+      false,
+      { error: error.message },
+      'Failed to fetch hotel details'
+    ));
   }
 });
 
@@ -278,6 +302,19 @@ app.get(/^\/(?!api\/|bookings).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/api/status', (req, res) => {
+  res.json(createApiResponse(
+    true,
+    {
+      server: 'OnTheGo API',
+      version: '1.0.0',
+      time: new Date().toISOString()
+    },
+    'Server is running'
+  ));
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`API ready for both web and mobile clients`);
 });
