@@ -6,10 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     hotelContainer.innerHTML = '<div class="loading">Loading hotels...</div>';
     
     try {
-      const response = await fetch(`/api/hotels?${params.toString()}`);
+      const response = await fetch(`https://onthego-jiti.onrender.com/api/hotels?${params.toString()}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
+      console.log("API Response received:", data.success, "message:", data.message);
       
       const hotels = (data.results || []).map(hotel => {
         if (typeof hotel === 'string') {
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       showHotels(hotels);
     } catch (error) {
+      console.error("Error fetching hotels:", error);
       hotelContainer.innerHTML = `
         <div class="error">
           Error loading hotels: ${error.message}<br>
@@ -76,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchHotelDetails(propertyToken, hotelCard) {
   try {
-    const response = await fetch(`/api/hotels/details?property_token=${propertyToken}`);
+    const response = await fetch(`https://onthego-jiti.onrender.com/api/hotels/details?property_token=${propertyToken}`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const data = await response.json();
@@ -94,42 +96,77 @@ function showHotels(hotels) {
   hotels.forEach((hotel, index) => {
     const photoUrls = [];
     
+    // Handle image objects in the 'images' array
     if (hotel.images && Array.isArray(hotel.images)) {
         hotel.images.forEach(img => {
-            if (img.original_image) {
+            if (typeof img === 'string') {
+                photoUrls.push(img);
+            } else if (img.original_image) {
                 photoUrls.push(img.original_image);
             } else if (img.thumbnail) {
                 photoUrls.push(img.thumbnail);
+            } else if (img.url) {
+                photoUrls.push(img.url);
+            } else if (img.link) {
+                photoUrls.push(img.link);
             }
         });
     }
     
+    // Check for photos array which is directly provided by the API
+    if (hotel.photos && Array.isArray(hotel.photos)) {
+        hotel.photos.forEach(photo => {
+            if (typeof photo === 'string') {
+                photoUrls.push(photo);
+            } else if (photo && photo.url) {
+                photoUrls.push(photo.url);
+            }
+        });
+    }
+    
+    // Handle property thumbnail
     if (hotel.property_thumbnail) {
         photoUrls.push(hotel.property_thumbnail);
     }
     
+    // Handle thumbnail directly on hotel object
+    if (hotel.thumbnail && typeof hotel.thumbnail === 'string') {
+        photoUrls.push(hotel.thumbnail);
+    }
+    
+    // Handle main photo URL
     if (hotel.main_photo_url) {
         photoUrls.push(hotel.main_photo_url);
     }
     
+    // Handle gallery photos
+    if (hotel.gallery_photos && Array.isArray(hotel.gallery_photos)) {
+        hotel.gallery_photos.forEach(photo => {
+            if (photo.url) photoUrls.push(photo.url);
+        });
+    }
+    
+    // Handle serpapi hotel thumbnails
     if (hotel.serpapi_hotel_thumbnails && Array.isArray(hotel.serpapi_hotel_thumbnails)) {
         hotel.serpapi_hotel_thumbnails.forEach(url => {
-            if (typeof url === 'string' && url.startsWith('http')) {
+            if (typeof url === 'string') {
                 photoUrls.push(url);
+            } else if (url && url.url) {
+                photoUrls.push(url.url);
             }
         });
     }
     
+    // More lenient URL validation - only filter out obviously invalid URLs
     const validUrls = [...new Set(photoUrls.filter(url => 
         url && 
         typeof url === 'string' && 
-        url.startsWith('http') &&
-        !url.includes('placehold.co') &&
-        !url.includes('googleusercontent.com/proxy')
+        (url.startsWith('http') || url.startsWith('https')) &&
+        !url.includes('placehold.co')
     ))];
 
-    hotel.extractedPhotos = validUrls;
-    hotel.extractedThumbnail = validUrls[0] || '';
+    hotel.extractedPhotos = validUrls.length > 0 ? validUrls : ['https://placehold.co/200x150?text=Hotel'];
+    hotel.extractedThumbnail = validUrls[0] || 'https://placehold.co/200x150?text=Hotel';
     
   });
   
@@ -137,8 +174,10 @@ function showHotels(hotels) {
 
   if (!hotels || !hotels.length) {
     hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
+    console.error("No hotels found in the response", hotels);
     return;
   }
+  console.log(`Processing ${hotels.length} hotels from API response`);
 
   const USD_TO_INR = 83;
 
@@ -173,16 +212,16 @@ function showHotels(hotels) {
     if (hotel.deal) {
       priceINR += ` (${hotel.deal})`;
     }
+    // Ensure we have valid photos
     const photos = (hotel.extractedPhotos && hotel.extractedPhotos.length > 0) ? 
                    hotel.extractedPhotos : 
-                   (Array.isArray(hotel.photos) && hotel.photos.length > 0) ? 
-                   hotel.photos : 
-                   ['https://placehold.co/200x150?text=Hotel'];
+                   ['https://placehold.co/200x150?text=Hotel+' + encodeURIComponent(hotel.name || 'Unnamed')];
 
+    // Choose the best thumbnail to display
     const thumbnail = hotel.extractedThumbnail || 
                       (photos.length > 0 ? photos[0] : null) || 
                       hotel.thumbnail || 
-                      'https://placehold.co/200x150?text=Hotel';
+                      'https://placehold.co/200x150?text=Hotel+' + encodeURIComponent(hotel.name || 'Unnamed');
     
     return { 
       ...hotel, 
@@ -227,7 +266,7 @@ function showHotels(hotels) {
         <div class="hotel-image">
           <img src="${hotel.thumbnail}" 
                alt="${hotel.name || 'Hotel image'}"
-               onerror="this.src='https://placehold.co/220x165?text=Hotel'"
+               onerror="this.src='https://placehold.co/220x165?text=Hotel+${encodeURIComponent(hotel.name || 'Unnamed')}'"
                loading="lazy" />
           <div class="hotel-loading-overlay" style="display:none;">
             <div class="loading-spinner"></div>
