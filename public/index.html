@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OnTheGo - Find Your Perfect Stay</title>
+  <link rel="stylesheet" href="OnTheGo.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo" style="color:slateblue;">OnTheGo<span class="in-logo">(IN)</span></div>
+    </div>
+  </header>
+  <main class="hero-section">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Find Your Perfect Stay</h1>
+      <div class="booking-card">
+        <div class="input-row">
+          <div class="input-group">
+            <label for="checkin-date">CHECK-IN</label>
+            <input id="checkin-date" class="date-input form-input" type="text" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="checkout-date">CHECK-OUT</label>
+            <input id="checkout-date" class="date-input form-input" type="text" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="state-select">LOCATION</label>
+            <select id="state-select" class="custom-select">
+              <option value="">Select State</option>
+            </select>
+          </div>
+          <button id="apply-btn" class="primary-cta" disabled>SEARCH HOTELS</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="OnTheGo.js"></script>
+</body>
+</html>
