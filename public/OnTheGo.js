@@ -363,7 +363,11 @@ function setupLocationSearch() {
           dropdownList.appendChild(cityItem);
         });
       });
-  }
+      const visibleItems = dropdownList.querySelectorAll('.location-item').length;
+      const itemHeight = 40;
+      const dropdownHeight = Math.min(visibleItems, 8) * itemHeight;
+      dropdownList.style.maxHeight = dropdownHeight + 'px';
+    }
 
   function positionDropdownAboveIfNeeded(inputElem, dropdownElem, dropdownHeight = 320) {
     dropdownElem.classList.remove('above');

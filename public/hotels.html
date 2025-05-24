@@ -1,6 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>
+    .booking-card {
+      position: relative !important;
+      z-index: 1001 !important;
+    }
+    .hotel-list {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+    .input-group:nth-child(3) {
+      position: relative !important;
+      z-index: 100;
+    }
+    .location-dropdown {
+      position: absolute !important;
+      top: 100% !important;
+      width: max-content !important;
+      min-width: 250px !important;   
+      max-width: 90vw !important;  
+      white-space: nowrap !important;
+      z-index: 9999 !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      border-radius: 8px;
+      border: 1px solid #d3dbe3;
+      background: #fff;
+      padding: 0.5em 0;
+      margin-top: 2px;
+      font-size: 1rem;
+      overflow-x: auto;
+    }
+    .location-dropdown div,
+    .location-dropdown option {
+      padding: 0.5em 1.2em;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      outline: none;
+      white-space: nowrap;
+    }
+
+  </style>
   <meta charset="UTF-8">
   <title>Available Hotels</title>
   <link rel="stylesheet" href="OnTheGo.css">
@@ -11,12 +52,40 @@
       <div class="logo" style="color:slateblue;">OnTheGo<span class="in-logo">(IN)</span></div>
       <button onclick="window.location.href='/'" class="back-to-search">← Back to Search</button>
     </div>
+    <div class="hr-wrap">
+      <div class="hr-real"></div>
+      <div class="hr-fade"></div>
+    </div>
   </header>
+  <div class="booking-card" style="height: 110px; padding:10px;">
+  <div class="input-row" style="max-width: 40%; align-items: center; margin-left: 21%;">
+    <div class="input-group">
+      <label for="checkin-date">CHECK-IN</label>
+      <input id="checkin-date" class="date-input form-input" type="text" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label for="checkout-date">CHECK-OUT</label>
+      <input id="checkout-date" class="date-input form-input" type="text" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label for="state-select">LOCATION</label>
+      <select id="state-select" class="custom-select">
+        <option value="">Select State</option>
+      </select>
+      <select id="city-select" class="custom-select" disabled>
+        <option value="">Select City</option>
+      </select>
+    </div>
+    <button id="apply-btn" class="primary-cta" disabled>SEARCH HOTELS</button>
+  </div>
+</div>
+<hr>
   <main class="booking-container-">
     <div class="hotel-list" id="hotelContainer">
       <div class="loading">Loading hotels...</div>
     </div>
   </main>
   <script src="hotels.js"></script>
+  <script src="OnTheGo.js"></script>
 </body>
 </html>
