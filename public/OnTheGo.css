@@ -626,7 +626,7 @@ body {
   .hotel-image {
     width: 100%;
     height: auto;
-    max-height: 220px; /* Increased by 10% from 200px */
+    max-height: 220px;
     margin-bottom: 15px;
   }
   
@@ -952,19 +952,19 @@ textarea.form-input {
 .back-to-search {
   background: none;
   border: none;
-  color: slateblue;  /* Match exact logo color */
+  color: slateblue;  
   cursor: pointer;
   font-size: 16px;
   padding: 0;
   display: flex;
   align-items: center;
   font-family: 'Poppins', sans-serif;
-  font-weight: 500;  /* Add medium font weight */
-  transition: opacity 0.2s ease;  /* Smooth hover effect */
+  font-weight: 500; 
+  transition: opacity 0.2s ease; 
 }
 
 .back-to-search:hover {
-  opacity: 0.8;  /* Subtle hover effect instead of underline */
+  opacity: 0.8; 
 }
 
 @media (max-width: 768px) {
@@ -979,7 +979,7 @@ textarea.form-input {
     }
 }
 
-/* Add media query for mobile responsiveness */
+
 @media (max-width: 768px) {
     .logo-container {
         padding: 15px;

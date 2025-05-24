@@ -147,29 +147,24 @@ function showHotels(hotels) {
         });
     }
     
-    // Handle property thumbnail
     if (hotel.property_thumbnail) {
         photoUrls.push(hotel.property_thumbnail);
     }
     
-    // Handle thumbnail directly on hotel object
     if (hotel.thumbnail && typeof hotel.thumbnail === 'string') {
         photoUrls.push(hotel.thumbnail);
     }
     
-    // Handle main photo URL
     if (hotel.main_photo_url) {
         photoUrls.push(hotel.main_photo_url);
     }
     
-    // Handle gallery photos
     if (hotel.gallery_photos && Array.isArray(hotel.gallery_photos)) {
         hotel.gallery_photos.forEach(photo => {
             if (photo.url) photoUrls.push(photo.url);
         });
     }
     
-    // Handle serpapi hotel thumbnails
     if (hotel.serpapi_hotel_thumbnails && Array.isArray(hotel.serpapi_hotel_thumbnails)) {
         hotel.serpapi_hotel_thumbnails.forEach(url => {
             if (typeof url === 'string') {
@@ -180,12 +175,9 @@ function showHotels(hotels) {
         });
     }
     
-    // More lenient URL validation - only filter out obviously invalid URLs
-    // More lenient URL validation - only filter out obviously invalid URLs
     const validUrls = [...new Set(photoUrls.filter(url => {
         if (!url) return false;
         try {
-            // Accept any URL that looks reasonably valid
             return typeof url === 'string' && 
                 (url.startsWith('http') || url.startsWith('https') || url.startsWith('//') || 
                  url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg'));
@@ -195,14 +187,12 @@ function showHotels(hotels) {
         }
     }))];
     
-    // If no valid URLs found, try to extract from other properties
     if (validUrls.length === 0 && hotel.images) {
         hotel.images.forEach(img => {
             if (img && img.thumbnail) validUrls.push(img.thumbnail);
         });
     }
     
-    // Debug log the original photo URLs
     console.log(`Hotel ${hotel.name}: Found ${validUrls.length} valid URLs out of ${photoUrls.length} total URLs`);
 
     hotel.extractedPhotos = validUrls.length > 0 ? validUrls : ['https://placehold.co/200x150?text=' + encodeURIComponent(hotel.name || 'Hotel')];
@@ -257,14 +247,12 @@ function showHotels(hotels) {
     if (hotel.deal) {
       priceINR += ` (${hotel.deal})`;
     }
-    // Ensure we have valid photos
     const photos = (hotel.extractedPhotos && hotel.extractedPhotos.length > 0) ? 
                    hotel.extractedPhotos : 
                    ['https://placehold.co/200x150?text=Hotel+' + encodeURIComponent(hotel.name || 'Unnamed')];
     
     console.log(`Hotel ${hotel.name}: Final photos array length: ${photos.length}`);
 
-    // Choose the best thumbnail to display
     const thumbnail = hotel.extractedThumbnail || 
                       (photos.length > 0 ? photos[0] : null) || 
                       hotel.thumbnail || 
