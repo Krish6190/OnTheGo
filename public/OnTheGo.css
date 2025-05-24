@@ -45,17 +45,20 @@ body {
 }
 
 .logo-container {
-  max-width: 1200px;
-  margin: 0 auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
 }
 
 .logo {
-  font-family:'Times New Roman', Times, serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--grey-white);
-  letter-spacing: 1px;
-  margin-left: 30px;
+    font-family:'Times New Roman', Times, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--grey-white);
+    letter-spacing: 1px;
 }
 
 
@@ -942,8 +945,26 @@ textarea.form-input {
 }
 
 .secondary-cta:hover {
-    background: #e9ecef;
-    border-color: #d3d7db;
+  background-color: #ddd;
+  border-color: #ccc;
+}
+
+.back-to-search {
+  background: none;
+  border: none;
+  color: slateblue;  /* Match exact logo color */
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;  /* Add medium font weight */
+  transition: opacity 0.2s ease;  /* Smooth hover effect */
+}
+
+.back-to-search:hover {
+  opacity: 0.8;  /* Subtle hover effect instead of underline */
 }
 
 @media (max-width: 768px) {
@@ -957,6 +978,23 @@ textarea.form-input {
         padding: 6px 12px;
     }
 }
+
+/* Add media query for mobile responsiveness */
+@media (max-width: 768px) {
+    .logo-container {
+        padding: 15px;
+        gap: 20px;
+    }
+    
+    .logo {
+        font-size: 1.8rem;
+    }
+    
+    .back-to-search {
+        font-size: 14px;
+    }
+}
+
 .form-input[readonly] {
     background-color: #f8f9fa;
     cursor: not-allowed;
