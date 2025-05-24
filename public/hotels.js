@@ -11,8 +11,30 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const data = await response.json();
       console.log("API Response received:", data.success, "message:", data.message);
+      console.log("Full API response:", data);
+      console.log("Number of hotels in response:", data.data?.results?.length || 0);
+      console.log("Sample hotel data:", data.data?.results?.[0] || "No hotel data");
       
-      const hotels = (data.results || []).map(hotel => {
+      if (!data || !data.data || !Array.isArray(data.data.results)) {
+        console.error("Invalid API response structure:", data);
+        throw new Error("Invalid API response format");
+      }
+      
+      const hotelsData = data.data.results || [];
+      console.log("Extracted hotels data:", hotelsData, "Count:", hotelsData.length);
+      
+      if (!hotelsData.length) {
+          console.error("Empty hotels data array from API");
+          hotelContainer.innerHTML = `
+              <div class="error">
+                  <p>No hotels available for the selected dates in ${params.get('city')}, ${params.get('state')}.</p>
+                  <p>Please try different dates or location.</p>
+              </div>`;
+          return;
+      }
+      console.log("Processing hotels data:", hotelsData.length, "hotels found");
+      
+      const hotels = (hotelsData || []).map(hotel => {
         if (typeof hotel === 'string') {
           try {
             const hotelStr = hotel.startsWith('@{') ? hotel.substring(1) : hotel;
@@ -111,6 +133,7 @@ function showHotels(hotels) {
                 photoUrls.push(img.link);
             }
         });
+        console.log("Processed images array:", photoUrls.length);
     }
     
     // Check for photos array which is directly provided by the API
@@ -158,23 +181,45 @@ function showHotels(hotels) {
     }
     
     // More lenient URL validation - only filter out obviously invalid URLs
-    const validUrls = [...new Set(photoUrls.filter(url => 
-        url && 
-        typeof url === 'string' && 
-        (url.startsWith('http') || url.startsWith('https')) &&
-        !url.includes('placehold.co')
-    ))];
+    // More lenient URL validation - only filter out obviously invalid URLs
+    const validUrls = [...new Set(photoUrls.filter(url => {
+        if (!url) return false;
+        try {
+            // Accept any URL that looks reasonably valid
+            return typeof url === 'string' && 
+                (url.startsWith('http') || url.startsWith('https') || url.startsWith('//') || 
+                 url.includes('.jpg') || url.includes('.png') || url.includes('.jpeg'));
+        } catch (e) {
+            console.log("Error validating URL:", url);
+            return false;
+        }
+    }))];
+    
+    // If no valid URLs found, try to extract from other properties
+    if (validUrls.length === 0 && hotel.images) {
+        hotel.images.forEach(img => {
+            if (img && img.thumbnail) validUrls.push(img.thumbnail);
+        });
+    }
+    
+    // Debug log the original photo URLs
+    console.log(`Hotel ${hotel.name}: Found ${validUrls.length} valid URLs out of ${photoUrls.length} total URLs`);
 
-    hotel.extractedPhotos = validUrls.length > 0 ? validUrls : ['https://placehold.co/200x150?text=Hotel'];
-    hotel.extractedThumbnail = validUrls[0] || 'https://placehold.co/200x150?text=Hotel';
+    hotel.extractedPhotos = validUrls.length > 0 ? validUrls : ['https://placehold.co/200x150?text=' + encodeURIComponent(hotel.name || 'Hotel')];
+    hotel.extractedThumbnail = validUrls[0] || 'https://placehold.co/200x150?text=' + encodeURIComponent(hotel.name || 'Hotel');
+    console.log(`Hotel ${hotel.name}: Found ${validUrls.length} valid image URLs`);
     
   });
   
   hotelContainer.innerHTML = '';
 
   if (!hotels || !hotels.length) {
-    hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
-    console.error("No hotels found in the response", hotels);
+    hotelContainer.innerHTML = `
+        <div class="error">
+            <p>No hotels found for your search criteria.</p>
+            <p>Try searching for a different city or different dates.</p>
+        </div>`;
+    console.error("No hotels found in the response. Hotels array:", hotels);
     return;
   }
   console.log(`Processing ${hotels.length} hotels from API response`);
@@ -216,6 +261,8 @@ function showHotels(hotels) {
     const photos = (hotel.extractedPhotos && hotel.extractedPhotos.length > 0) ? 
                    hotel.extractedPhotos : 
                    ['https://placehold.co/200x150?text=Hotel+' + encodeURIComponent(hotel.name || 'Unnamed')];
+    
+    console.log(`Hotel ${hotel.name}: Final photos array length: ${photos.length}`);
 
     // Choose the best thumbnail to display
     const thumbnail = hotel.extractedThumbnail || 
@@ -239,7 +286,12 @@ function showHotels(hotels) {
 
 
   if (!hotelsWithINR.length) {
-    hotelContainer.innerHTML = '<div class="error">No hotels found for your search criteria.</div>';
+    hotelContainer.innerHTML = `
+        <div class="error">
+            <p>No hotels with pricing information available for ${params.get('city')}, ${params.get('state')}.</p>
+            <p>Please try modifying your search criteria.</p>
+        </div>`;
+    console.error("No hotels with INR prices. Raw hotels:", hotels);
     return;
   }
 
@@ -264,9 +316,9 @@ function showHotels(hotels) {
     card.innerHTML = `
       <div class="hotel-card-content">
         <div class="hotel-image">
-          <img src="${hotel.thumbnail}" 
+          <img src="${hotel.extractedThumbnail || hotel.thumbnail || hotel.images?.[0]?.thumbnail || 'https://placehold.co/220x165?text=' + encodeURIComponent(hotel.name || 'Hotel')}" 
                alt="${hotel.name || 'Hotel image'}"
-               onerror="this.src='https://placehold.co/220x165?text=Hotel+${encodeURIComponent(hotel.name || 'Unnamed')}'"
+               onerror="this.onerror=null; this.src='https://placehold.co/220x165?text=' + encodeURIComponent('${hotel.name || 'Hotel'}')"
                loading="lazy" />
           <div class="hotel-loading-overlay" style="display:none;">
             <div class="loading-spinner"></div>
