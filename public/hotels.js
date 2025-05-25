@@ -114,7 +114,13 @@ async function fetchHotelDetails(propertyToken, hotelCard) {
   }
 }
 
+// Store the original hotel list for filtering
+let originalHotels = [];
+
 function showHotels(hotels) {
+  // Store the original list
+  originalHotels = [...hotels];
+  
   hotels.forEach((hotel, index) => {
     const photoUrls = [];
     
@@ -136,7 +142,6 @@ function showHotels(hotels) {
         console.log("Processed images array:", photoUrls.length);
     }
     
-    // Check for photos array which is directly provided by the API
     if (hotel.photos && Array.isArray(hotel.photos)) {
         hotel.photos.forEach(photo => {
             if (typeof photo === 'string') {
@@ -201,9 +206,11 @@ function showHotels(hotels) {
     
   });
   
+  const hotelsWithINR = processHotelsForDisplay(hotels);
+
   hotelContainer.innerHTML = '';
 
-  if (!hotels || !hotels.length) {
+  if (!hotelsWithINR.length) {
     hotelContainer.innerHTML = `
         <div class="error">
             <p>No hotels found for your search criteria.</p>
@@ -214,9 +221,64 @@ function showHotels(hotels) {
   }
   console.log(`Processing ${hotels.length} hotels from API response`);
 
+  // Add the heading first, before the layout
+  const heading = document.createElement('h2');
+  heading.textContent = `Total ${hotels.length} Hotels found in ${params.get('city')}, ${params.get('state')}`;
+  heading.style.marginBottom = '20px';
+  hotelContainer.appendChild(heading);
+
+  const layoutContainer = document.createElement('div');
+  layoutContainer.className = 'hotel-layout-container';
+  
+  const searchSidebar = document.createElement('div');
+  searchSidebar.className = 'hotel-search-sidebar';
+  searchSidebar.innerHTML = `
+    <div class="search-input-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="hotelSearchInput" class="hotel-search-input" placeholder="Search by hotel name..." />
+    </div>
+  `;
+  
+  const hotelCardsContainer = document.createElement('div');
+  hotelCardsContainer.id = 'hotelCardsContainer';
+  hotelCardsContainer.className = 'hotel-cards-container';
+  
+  layoutContainer.appendChild(searchSidebar);
+  layoutContainer.appendChild(hotelCardsContainer);
+  
+  hotelContainer.appendChild(layoutContainer);
+
+  const searchInput = searchSidebar.querySelector('#hotelSearchInput');
+  searchInput.addEventListener('input', (e) => {
+    const searchValue = e.target.value.toLowerCase().trim();
+    filterHotels(searchValue);
+  });
+
+  displayHotelCards(hotelsWithINR, hotelCardsContainer);
+}
+
+function filterHotels(searchTerm) {
+  const hotelCardsContainer = document.getElementById('hotelCardsContainer');
+  
+  if (!searchTerm) {
+    const hotelsWithINR = processHotelsForDisplay(originalHotels);
+    displayHotelCards(hotelsWithINR, hotelCardsContainer);
+    return;
+  }
+
+  const filteredHotels = originalHotels.filter(hotel => 
+    hotel.name && hotel.name.toLowerCase().includes(searchTerm)
+  );
+
+  const filteredHotelsWithINR = processHotelsForDisplay(filteredHotels);
+  
+  displayHotelCards(filteredHotelsWithINR, hotelCardsContainer);
+}
+
+function processHotelsForDisplay(hotels) {
   const USD_TO_INR = 83;
 
-  const hotelsWithINR = hotels.map(hotel => {
+  return hotels.map(hotel => {
     let priceUSD = hotel.rate_per_night?.lowest || 
                  hotel.price_per_night || 
                  hotel.price || 
@@ -271,25 +333,29 @@ function showHotels(hotels) {
       checkout: params.get('checkout')
     };
   }).filter(hotel => hotel && hotel.name);
+}
 
-
-  if (!hotelsWithINR.length) {
-    hotelContainer.innerHTML = `
-        <div class="error">
-            <p>No hotels with pricing information available for ${params.get('city')}, ${params.get('state')}.</p>
-            <p>Please try modifying your search criteria.</p>
-        </div>`;
-    console.error("No hotels with INR prices. Raw hotels:", hotels);
-    return;
-  }
-
-  hotelsWithINR.sort((a, b) => {
+function displayHotelCards(hotels, container) {
+  container.innerHTML = '';
+  
+  hotels.sort((a, b) => {
     if (a.priceINR !== 'Price on request' && b.priceINR === 'Price on request') return -1;
     if (a.priceINR === 'Price on request' && b.priceINR !== 'Price on request') return 1;
     return (parseFloat(b.overall_rating) || 0) - (parseFloat(a.overall_rating) || 0);
   });
+  
+  if (!hotels.length) {
+    container.innerHTML = `
+      <div class="error">
+        <p>No hotels match your search.</p>
+        <p>Try a different search term or clear the search field to see all hotels.</p>
+      </div>`;
+    return;
+  }
 
-  hotelsWithINR.forEach(hotel => {
+  // Display hotel cards
+
+  hotels.forEach(hotel => {
     const card = document.createElement('div');
     card.className = 'hotel-card';
     
@@ -332,7 +398,7 @@ function showHotels(hotels) {
       </div>
     `;
     
-    hotelContainer.appendChild(card);
+    container.appendChild(card);
 
     card.addEventListener('click', async (e) => {
       const loadingOverlay = card.querySelector('.hotel-loading-overlay');
@@ -381,7 +447,7 @@ function showHotels(hotels) {
       }
     });
   });
-} 
+}
 
 fetchHotels();
-}); 
+});
