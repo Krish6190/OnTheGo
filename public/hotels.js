@@ -417,7 +417,7 @@ function displayHotelCards(hotels, container) {
           checkin: hotel.checkin,
           checkout: hotel.checkout,
           photos: hotel.photos || [],
-          guests: '2 Guests',
+          guests: hotel.guests || 2,
           booking_time: new Date().toISOString(),
           search_params: {
             city: params.get('city'),
