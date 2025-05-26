@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   let hotelData = JSON.parse(sessionStorage.getItem('hotelData'));
+  const guestsParam = params.get('guests');
+  
   if (!hotelData) {
     hotelData = {
       name: decodeURIComponent(hotelName),
@@ -16,10 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
       priceRaw: 0,
       description: 'No detailed information available for this hotel.',
       amenities: [],
-      guests: params.get('guests') || 2
+      guests: guestsParam ? parseInt(guestsParam) : 2
     };
-  } else if (!hotelData.guests) {
-    hotelData.guests = params.get('guests') || 2;
+  } else {
+    if (guestsParam) {
+      hotelData.guests = parseInt(guestsParam);
+    } else if (!hotelData.guests) {
+      hotelData.guests = 2;
+    }
   }
   
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
@@ -97,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   checkInDateInput.value = formatDate(hotelData.checkin) || '';
   checkOutDateInput.value = formatDate(hotelData.checkout) || '';
-  guestsInput.value = `${hotelData.guests || 2} Guests`;
+  const guestCount = parseInt(hotelData.guests) || 2;
+  guestsInput.value = `${guestCount} guests`;
 
   checkInDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
   checkOutDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
@@ -274,14 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
       guest: document.getElementById('fullName').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
-      guests: guestsInput.value,
+      guests: guestCount,
       checkIn: checkInDateInput.value,
       checkOut: checkOutDateInput.value,
       specialRequests: document.getElementById('specialRequests')?.value.trim() || '',
       totalAmount: document.getElementById('summaryTotal').textContent
     };
 
-    const guestCount = parseInt(hotelData.guests) || 2;
+    let guestCount;
+    if (guestsInput && guestsInput.value) {
+      guestCount = parseInt(guestsInput.value) || parseInt(hotelData.guests) || 2;
+    } else {
+      guestCount = parseInt(hotelData.guests) || 2;
+    }
     const roomsNeeded = Math.ceil(guestCount / 2);
     
     if (confirm(
@@ -290,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Guest Name: ${bookingData.guest}
   Check-in: ${bookingData.checkIn}
   Check-out: ${bookingData.checkOut}
-  Number of Guests: ${bookingData.guests}
+  Number of Guests: ${bookingData.guests} guest${bookingData.guests > 1 ? 's' : ''}
   Number of Rooms: ${roomsNeeded}
   Total Amount: ${bookingData.totalAmount}
   
@@ -377,7 +389,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('summaryNights').textContent = nights || '--';
 
-    const guestCount = parseInt(hotelData.guests) || 2;
+    let guestCount;
+    if (guestsInput && guestsInput.value) {
+      guestCount = parseInt(guestsInput.value) || parseInt(hotelData.guests) || 2;
+    } else {
+      guestCount = parseInt(hotelData.guests) || 2;
+    }
     const roomsNeeded = Math.ceil(guestCount / 2);
     
     const summaryTable = document.querySelector('.booking-summary');
@@ -389,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roomRow.className = 'summary-row';
       roomRow.innerHTML = `
         <span>Number of Rooms:</span>
-        <span>${roomsNeeded} (${guestCount} guests, max 2 per room)</span>
+        <span>${roomsNeeded} room${roomsNeeded > 1 ? 's' : ''} (${guestCount} guest${guestCount > 1 ? 's' : ''}, max 2 per room)</span>
       `;
       
       const totalRow = summaryTable.querySelector('.summary-row.total');
@@ -400,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else {
       roomRow.querySelector('span:last-child').textContent = 
-        `${roomsNeeded} (${guestCount} guests, max 2 per room)`;
+        `${roomsNeeded} room${roomsNeeded > 1 ? 's' : ''} (${guestCount} guest${guestCount > 1 ? 's' : ''}, max 2 per room)`;
     }
 
     let price = 0;
