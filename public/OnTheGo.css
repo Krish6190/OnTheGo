@@ -1016,6 +1016,7 @@ body {
     border: 1px solid #eaedf0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+    width: 100%;
 }
 
 .booking-form h3 {
@@ -1034,6 +1035,17 @@ body {
     margin-bottom: 16px;
 }
 
+/* Specific styles for booking form to prevent field shrinking */
+.booking-form .form-row {
+    width: 100%;
+}
+
+.booking-form .input-group {
+    width: 100% !important;
+    min-width: auto !important;
+    flex: 1 1 auto !important;
+}
+
 .form-input {
     width: 100%;
     padding: 14px 16px;
@@ -1043,6 +1055,12 @@ body {
     background: #f8f9fa;
     outline: none;
     transition: all 0.3s ease;
+}
+
+/* Ensure booking form inputs maintain full width */
+.booking-form .form-input {
+    width: 100% !important;
+    min-width: 0 !important;
 }
 
 .form-input:focus {
@@ -1057,6 +1075,18 @@ textarea.form-input {
 
 .special-requests {
     grid-column: 1 / -1;
+    width: 100% !important;
+}
+
+/* Override any nth-child selectors that might affect booking form */
+.booking-form .input-group:nth-child(1),
+.booking-form .input-group:nth-child(2),
+.booking-form .input-group:nth-child(3),
+.booking-form .input-group:nth-child(4) {
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
 }
 
 .booking-summary {
@@ -1096,6 +1126,15 @@ textarea.form-input {
     .form-row {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+    
+    /* Maintain responsive layout for booking form */
+    .booking-form .form-row {
+        width: 100%;
+    }
+    
+    .booking-form .input-group {
+        width: 100% !important;
     }
     
     .hotel-details-card {

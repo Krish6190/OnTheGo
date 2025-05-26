@@ -15,8 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
       priceINR: 'Price not available',
       priceRaw: 0,
       description: 'No detailed information available for this hotel.',
-      amenities: []
+      amenities: [],
+      guests: params.get('guests') || 2
     };
+  } else if (!hotelData.guests) {
+    hotelData.guests = params.get('guests') || 2;
   }
   
   document.getElementById('summaryRate').textContent = hotelData.priceINR;
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   checkInDateInput.value = formatDate(hotelData.checkin) || '';
   checkOutDateInput.value = formatDate(hotelData.checkout) || '';
-  guestsInput.value = '2 Guests'; 
+  guestsInput.value = `${hotelData.guests || 2} Guests`;
 
   checkInDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
   checkOutDateInput.title = "This field is set from your search and cannot be modified. Please go back to search to change these details.";
@@ -278,6 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
       totalAmount: document.getElementById('summaryTotal').textContent
     };
 
+    // Calculate rooms needed for confirmation message
+    const guestCount = parseInt(hotelData.guests) || 2;
+    const roomsNeeded = Math.ceil(guestCount / 2);
+    
     if (confirm(
       `Please confirm your booking details:\n
   Hotel: ${bookingData.hotel}
@@ -285,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Check-in: ${bookingData.checkIn}
   Check-out: ${bookingData.checkOut}
   Number of Guests: ${bookingData.guests}
+  Number of Rooms: ${roomsNeeded}
   Total Amount: ${bookingData.totalAmount}
   
   Click OK to confirm your booking.`
@@ -370,6 +378,37 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('summaryNights').textContent = nights || '--';
 
+    // Calculate number of rooms needed (2 guests per room)
+    const guestCount = parseInt(hotelData.guests) || 2;
+    const roomsNeeded = Math.ceil(guestCount / 2);
+    
+    // Add room info to booking summary
+    const summaryTable = document.querySelector('.booking-summary');
+    
+    // Check if room row already exists
+    let roomRow = document.getElementById('summaryRooms');
+    if (!roomRow) {
+      // Create new room row if it doesn't exist
+      roomRow = document.createElement('div');
+      roomRow.id = 'summaryRooms';
+      roomRow.className = 'summary-row';
+      roomRow.innerHTML = `
+        <span>Number of Rooms:</span>
+        <span>${roomsNeeded} (${guestCount} guests, max 2 per room)</span>
+      `;
+      
+      // Insert before the total row
+      const totalRow = summaryTable.querySelector('.summary-row.total');
+      if (totalRow) {
+        summaryTable.insertBefore(roomRow, totalRow);
+      } else {
+        summaryTable.appendChild(roomRow);
+      }
+    } else {
+      roomRow.querySelector('span:last-child').textContent = 
+        `${roomsNeeded} (${guestCount} guests, max 2 per room)`;
+    }
+
     let price = 0;
     if (hotelData.priceRaw) {
         price = parseFloat(hotelData.priceRaw);
@@ -382,11 +421,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (nights > 0 && price > 0) {
-        const totalAmount = price * nights;
+        // Multiply price by number of nights AND number of rooms
+        const totalAmount = price * nights * roomsNeeded;
         document.getElementById('summaryTotal').textContent = 
             '₹' + totalAmount.toLocaleString('en-IN');
     } else {
         document.getElementById('summaryTotal').textContent = '--';
     }
-  }   
+  }  
 });   

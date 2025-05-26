@@ -194,8 +194,20 @@ function isValidDate(date) {
 
 const checkinInput = document.getElementById('checkin-date');
 const checkoutInput = document.getElementById('checkout-date');
+const guestCountInput = document.getElementById('guest-count');
 setupDateAutoFormat(checkinInput, checkoutInput);
 setupDateAutoFormat(checkoutInput, null);
+
+// Initialize guest count input
+if (guestCountInput) {
+  guestCountInput.addEventListener('change', function() {
+    // Ensure minimum value is 1
+    if (parseInt(this.value) < 1) {
+      this.value = 1;
+    }
+    validateForm();
+  });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const stateSelect = document.getElementById('state-select');
@@ -223,20 +235,24 @@ document.addEventListener('DOMContentLoaded', () => {
   checkoutInput.addEventListener('input', validateForm);
 
   function validateForm() {
+    const guestCount = guestCountInput ? parseInt(guestCountInput.value) || 0 : 1;
     const allFilled =
       checkinInput.value.length === 10 &&
       checkoutInput.value.length === 10 &&
       stateSelect.value &&
-      citySelect.value;
+      citySelect.value &&
+      guestCount >= 1;
     document.getElementById('apply-btn').disabled = !allFilled;
   }
 
   document.getElementById('apply-btn').addEventListener('click', function() {
+    const guestCount = guestCountInput ? parseInt(guestCountInput.value) || 1 : 1;
     const params = new URLSearchParams({
       checkin: checkinInput.value,
       checkout: checkoutInput.value,
       state: stateSelect.value,
-      city: citySelect.value
+      city: citySelect.value,
+      guests: guestCount
     });
     window.location.href = `hotels.html?${params.toString()}`;
   });
@@ -416,11 +432,14 @@ function setupLocationSearch() {
   
   document.getElementById('apply-btn').addEventListener('click', function() {
     if (!selectedLocation || selectedLocation.type !== 'city') return;
+    const guestCount = document.getElementById('guest-count') ? 
+                       parseInt(document.getElementById('guest-count').value) || 1 : 1;
     const params = new URLSearchParams({
       checkin: checkinInput.value,
       checkout: checkoutInput.value,
       state: selectedLocation.state,
-      city: selectedLocation.city
+      city: selectedLocation.city,
+      guests: guestCount
     });
     window.location.href = `hotels.html?${params.toString()}`;
   });
