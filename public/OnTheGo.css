@@ -6,7 +6,6 @@
   --grey-white: rgba(255, 255, 255, 0.9);
 }
 
-/* Hotel search and filter layout */
 .hotel-layout-container {
   display: flex;
   width: 100%;
@@ -34,7 +33,6 @@
   align-items: stretch;
 }
 
-/* Hotel container styles */
 #hotelContainer {
   display: flex;
   flex-direction: column;
@@ -43,7 +41,6 @@
   gap: 20px;
 }
 
-/* Style for the hotel count heading */
 #hotelContainer > h2 {
   width: 100%;
   max-width: 1200px;
@@ -100,7 +97,6 @@
   margin-top: 0;
 }
 
-/* Add styles for the search input container */
 .search-input-container {
   width: 100%;
   display: flex;
@@ -270,12 +266,10 @@ body {
   z-index: 9999;
 }
 
-/* Hide the city select in hotels page by default */
 #city-select {
   display: none;
 }
 
-/* Show only when needed through JS */
 #city-select.visible {
   display: block;
 }
@@ -1035,7 +1029,6 @@ body {
     margin-bottom: 16px;
 }
 
-/* Specific styles for booking form to prevent field shrinking */
 .booking-form .form-row {
     width: 100%;
 }
@@ -1057,7 +1050,6 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Ensure booking form inputs maintain full width */
 .booking-form .form-input {
     width: 100% !important;
     min-width: 0 !important;
@@ -1078,7 +1070,6 @@ textarea.form-input {
     width: 100% !important;
 }
 
-/* Override any nth-child selectors that might affect booking form */
 .booking-form .input-group:nth-child(1),
 .booking-form .input-group:nth-child(2),
 .booking-form .input-group:nth-child(3),
@@ -1128,7 +1119,6 @@ textarea.form-input {
         gap: 16px;
     }
     
-    /* Maintain responsive layout for booking form */
     .booking-form .form-row {
         width: 100%;
     }

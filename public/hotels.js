@@ -114,17 +114,14 @@ async function fetchHotelDetails(propertyToken, hotelCard) {
   }
 }
 
-// Store the original hotel list for filtering
 let originalHotels = [];
 
 function showHotels(hotels) {
-  // Store the original list
   originalHotels = [...hotels];
   
   hotels.forEach((hotel, index) => {
     const photoUrls = [];
     
-    // Handle image objects in the 'images' array
     if (hotel.images && Array.isArray(hotel.images)) {
         hotel.images.forEach(img => {
             if (typeof img === 'string') {
@@ -221,7 +218,6 @@ function showHotels(hotels) {
   }
   console.log(`Processing ${hotels.length} hotels from API response`);
 
-  // Add the heading first, before the layout
   const heading = document.createElement('h2');
   heading.textContent = `Total ${hotels.length} Hotels found in ${params.get('city')}, ${params.get('state')}`;
   heading.style.marginBottom = '20px';
@@ -353,7 +349,6 @@ function displayHotelCards(hotels, container) {
     return;
   }
 
-  // Display hotel cards
 
   hotels.forEach(hotel => {
     const card = document.createElement('div');

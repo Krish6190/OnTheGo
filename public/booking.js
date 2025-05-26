@@ -281,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
       totalAmount: document.getElementById('summaryTotal').textContent
     };
 
-    // Calculate rooms needed for confirmation message
     const guestCount = parseInt(hotelData.guests) || 2;
     const roomsNeeded = Math.ceil(guestCount / 2);
     
@@ -378,17 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('summaryNights').textContent = nights || '--';
 
-    // Calculate number of rooms needed (2 guests per room)
     const guestCount = parseInt(hotelData.guests) || 2;
     const roomsNeeded = Math.ceil(guestCount / 2);
     
-    // Add room info to booking summary
     const summaryTable = document.querySelector('.booking-summary');
     
-    // Check if room row already exists
     let roomRow = document.getElementById('summaryRooms');
     if (!roomRow) {
-      // Create new room row if it doesn't exist
       roomRow = document.createElement('div');
       roomRow.id = 'summaryRooms';
       roomRow.className = 'summary-row';
@@ -397,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>${roomsNeeded} (${guestCount} guests, max 2 per room)</span>
       `;
       
-      // Insert before the total row
       const totalRow = summaryTable.querySelector('.summary-row.total');
       if (totalRow) {
         summaryTable.insertBefore(roomRow, totalRow);
@@ -421,7 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (nights > 0 && price > 0) {
-        // Multiply price by number of nights AND number of rooms
         const totalAmount = price * nights * roomsNeeded;
         document.getElementById('summaryTotal').textContent = 
             '₹' + totalAmount.toLocaleString('en-IN');

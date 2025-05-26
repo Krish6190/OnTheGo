@@ -198,10 +198,8 @@ const guestCountInput = document.getElementById('guest-count');
 setupDateAutoFormat(checkinInput, checkoutInput);
 setupDateAutoFormat(checkoutInput, null);
 
-// Initialize guest count input
 if (guestCountInput) {
   guestCountInput.addEventListener('change', function() {
-    // Ensure minimum value is 1
     if (parseInt(this.value) < 1) {
       this.value = 1;
     }
