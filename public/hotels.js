@@ -405,7 +405,7 @@ function displayHotelCards(hotels, container) {
         if (!hotel.checkin || !hotel.checkout) {
           throw new Error('Invalid booking dates');
         }
-        
+        console.log(`No of guests ${hotel.guests}`);
         const hotelData = {
           name: hotel.name || 'Unnamed Hotel',
           overall_rating: hotel.overall_rating || 'N/A',

@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let hotelData = JSON.parse(sessionStorage.getItem('hotelData'));
   const guestsParam = hotelName.guests;
+  console.log(`No of guests ${guestsParam}`);
+  
   
   if (!hotelData) {
     hotelData = {
