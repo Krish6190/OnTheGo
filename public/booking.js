@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const hotelName = params.get('hotel');
+  console.log(hotelName);
   
   if (!hotelName) {
     window.location.href = '/';
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let hotelData = JSON.parse(sessionStorage.getItem('hotelData'));
   const guestsParam = hotelName.guests;
+  console.log(guestsParam);
   console.log(`No of guests ${guestsParam}`);
   
   

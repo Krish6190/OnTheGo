@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
+  const guests=params.get('guests');
   const hotelContainer = document.getElementById('hotelContainer');
 
   async function fetchHotels() {
@@ -405,7 +406,6 @@ function displayHotelCards(hotels, container) {
         if (!hotel.checkin || !hotel.checkout) {
           throw new Error('Invalid booking dates');
         }
-        console.log(`No of guests ${hotel.guests}`);
         const hotelData = {
           name: hotel.name || 'Unnamed Hotel',
           overall_rating: hotel.overall_rating || 'N/A',
@@ -417,7 +417,7 @@ function displayHotelCards(hotels, container) {
           checkin: hotel.checkin,
           checkout: hotel.checkout,
           photos: hotel.photos || [],
-          guests: hotel.guests || 2,
+          guests: guests || 2,
           booking_time: new Date().toISOString(),
           search_params: {
             city: params.get('city'),
